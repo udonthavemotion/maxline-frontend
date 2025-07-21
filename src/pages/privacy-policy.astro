@@ -1,0 +1,263 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { getPrivacyPolicy, getImageUrl, formatRichText, formatDate, type PrivacyPolicy } from "@/lib/strapi";
+
+// Fetch privacy policy data from Strapi
+let privacyPolicy: PrivacyPolicy | null = null;
+let error: string | null = null;
+
+try {
+  const response = await getPrivacyPolicy();
+  privacyPolicy = response.data;
+  console.log('✅ Privacy policy loaded from Strapi');
+} catch (err) {
+  console.error('⚠️ Privacy policy fetch failed, using fallback:', err);
+  error = 'Unable to load content from Strapi. Please check your configuration.';
+  
+  // Fallback data
+  privacyPolicy = {
+    id: 1,
+    documentId: "fallback",
+    title: "Privacy Policy",
+    content: [], // Will use fallback content in template
+    company_logo: undefined,
+    lastupdated: new Date().toISOString(),
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    publishedAt: new Date().toISOString(),
+  };
+}
+
+// Format the content - either from Strapi or fallback
+const hasContentFromStrapi = privacyPolicy?.content && privacyPolicy.content.length > 0;
+const contentHtml = hasContentFromStrapi ? formatRichText(privacyPolicy.content) : null;
+
+// Get company logo URL if available
+const logoUrl = privacyPolicy?.company_logo ? getImageUrl(privacyPolicy.company_logo, 'medium') : null;
+---
+
+<Layout title="Privacy Policy">
+  <!-- Google Fonts for Playfair Display -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" slot="head">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin slot="head">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet" slot="head">
+
+  <main class="bg-[#F5F0E8] min-h-screen">
+    <!-- Hero Section -->
+    <section class="bg-[#F5F0E8] pt-20 pb-16">
+      <div class="max-w-4xl mx-auto px-4 md:px-8 text-center">
+        <!-- Company Logo -->
+        {logoUrl && (
+          <div class="mb-6">
+            <img 
+              src={logoUrl} 
+              alt="Max Line Bulldogs Logo" 
+              class="mx-auto h-16 w-auto object-contain"
+            />
+          </div>
+        )}
+        
+        <h1 class="text-5xl md:text-6xl font-bold text-gray-800 mb-4" style="font-family: 'Playfair Display', serif;">
+          {privacyPolicy?.title || 'Privacy Policy'} 🐾
+        </h1>
+        <p class="text-xl text-gray-600 font-medium" style="font-family: 'Inter', sans-serif;">
+          Your Privacy Matters to Us
+        </p>
+        
+        {privacyPolicy?.lastupdated && (
+          <p class="text-sm text-gray-500 mt-4" style="font-family: 'Inter', sans-serif;">
+            Last updated: {formatDate(privacyPolicy.lastupdated)}
+          </p>
+        )}
+      </div>
+    </section>
+
+    <!-- Content Section -->
+    <section class="max-w-4xl mx-auto px-4 md:px-8 pb-20">
+      <div class="bg-white rounded-lg shadow-md p-8 md:p-12">
+        {hasContentFromStrapi && contentHtml ? (
+          <div 
+            class="prose prose-lg max-w-none privacy-content" 
+            style="font-family: 'Inter', sans-serif; font-size: 1.1rem; line-height: 1.6;"
+            set:html={contentHtml}
+          />
+        ) : (
+          <div class="space-y-12">
+            <!-- Introduction -->
+            <div class="space-y-4">
+              <h2 class="text-2xl font-bold text-gray-800 flex items-center" style="font-family: 'Playfair Display', serif;">
+                🐾 Introduction
+              </h2>
+              <div class="prose prose-lg max-w-none" style="font-family: 'Inter', sans-serif; font-size: 1.1rem; line-height: 1.6;">
+                <p>Max Line Bulldogs is committed to protecting your privacy and personal information. This Privacy Policy explains how we collect, use, and safeguard your information when you visit our website, inquire about our bulldogs, or engage with our breeding program.</p>
+                <p>We understand that your privacy is important, especially when sharing personal details about your interest in welcoming a bulldog into your family. This policy outlines our commitment to transparency and responsible data handling.</p>
+              </div>
+            </div>
+
+            <!-- Data Collected -->
+            <div class="space-y-4">
+              <h2 class="text-2xl font-bold text-gray-800 flex items-center" style="font-family: 'Playfair Display', serif;">
+                🐾 Information We Collect
+              </h2>
+              <div class="prose prose-lg max-w-none" style="font-family: 'Inter', sans-serif; font-size: 1.1rem; line-height: 1.6;">
+                <p>We may collect personal information such as your name, email address, phone number, and location when you contact us about our bulldogs or breeding program. We also collect information about your experience with bulldogs and your living situation to ensure our puppies are placed in suitable homes.</p>
+                <p>Our website may automatically collect technical information such as your IP address, browser type, and pages visited to improve your browsing experience and understand how visitors interact with our site.</p>
+              </div>
+            </div>
+
+            <!-- Use of Data -->
+            <div class="space-y-4">
+              <h2 class="text-2xl font-bold text-gray-800 flex items-center" style="font-family: 'Playfair Display', serif;">
+                🐾 How We Use Your Information
+              </h2>
+              <div class="prose prose-lg max-w-none" style="font-family: 'Inter', sans-serif; font-size: 1.1rem; line-height: 1.6;">
+                <p>Your information helps us respond to your inquiries about available puppies, provide updates on our breeding program, and ensure proper placement of our bulldogs. We may use your contact information to schedule visits, coordinate puppy pickups, and maintain ongoing communication about your bulldog's well-being.</p>
+                <p>We also use collected information to improve our website, understand our audience better, and provide relevant content about bulldog care, health, and breeding practices.</p>
+              </div>
+            </div>
+
+            <!-- Sharing -->
+            <div class="space-y-4">
+              <h2 class="text-2xl font-bold text-gray-800 flex items-center" style="font-family: 'Playfair Display', serif;">
+                🐾 Information Sharing
+              </h2>
+              <div class="prose prose-lg max-w-none" style="font-family: 'Inter', sans-serif; font-size: 1.1rem; line-height: 1.6;">
+                <p>We do not sell, trade, or rent your personal information to third parties. Your information may be shared with our breeding partners only when necessary for puppy placement and health documentation. We may also share information with veterinarians and genetic testing companies as required for health clearances and breeding records.</p>
+                <p>In rare cases, we may disclose information if required by law or to protect the safety and welfare of our animals, customers, or business operations.</p>
+              </div>
+            </div>
+
+            <!-- Cookies -->
+            <div class="space-y-4">
+              <h2 class="text-2xl font-bold text-gray-800 flex items-center" style="font-family: 'Playfair Display', serif;">
+                🐾 Cookies and Tracking
+              </h2>
+              <div class="prose prose-lg max-w-none" style="font-family: 'Inter', sans-serif; font-size: 1.1rem; line-height: 1.6;">
+                <p>Our website may use cookies to enhance your browsing experience, remember your preferences, and analyze site traffic. These cookies help us understand which pages are most popular and how visitors navigate our site.</p>
+                <p>You can choose to disable cookies in your browser settings, though this may affect some website functionality. We do not use cookies to collect personally identifiable information without your consent.</p>
+              </div>
+            </div>
+
+            <!-- Security -->
+            <div class="space-y-4">
+              <h2 class="text-2xl font-bold text-gray-800 flex items-center" style="font-family: 'Playfair Display', serif;">
+                🐾 Data Security
+              </h2>
+              <div class="prose prose-lg max-w-none" style="font-family: 'Inter', sans-serif; font-size: 1.1rem; line-height: 1.6;">
+                <p>We implement appropriate security measures to protect your personal information against unauthorized access, alteration, disclosure, or destruction. This includes secure data storage, encrypted communications where possible, and limited access to personal information by authorized personnel only.</p>
+                <p>While we strive to protect your information, no method of electronic transmission or storage is 100% secure. We cannot guarantee absolute security but are committed to using industry-standard practices to safeguard your data.</p>
+              </div>
+            </div>
+
+            <!-- Rights -->
+            <div class="space-y-4">
+              <h2 class="text-2xl font-bold text-gray-800 flex items-center" style="font-family: 'Playfair Display', serif;">
+                🐾 Your Rights
+              </h2>
+              <div class="prose prose-lg max-w-none" style="font-family: 'Inter', sans-serif; font-size: 1.1rem; line-height: 1.6;">
+                <p>You have the right to access, update, or delete your personal information at any time. If you wish to review what information we have collected about you, request corrections, or ask for your data to be removed from our records, please contact us using the information provided below.</p>
+                <p>You may also opt out of receiving marketing communications from us, though we may still need to contact you regarding specific inquiries or transactions related to our bulldogs.</p>
+              </div>
+            </div>
+
+            <!-- Changes -->
+            <div class="space-y-4">
+              <h2 class="text-2xl font-bold text-gray-800 flex items-center" style="font-family: 'Playfair Display', serif;">
+                🐾 Policy Changes
+              </h2>
+              <div class="prose prose-lg max-w-none" style="font-family: 'Inter', sans-serif; font-size: 1.1rem; line-height: 1.6;">
+                <p>We may update this Privacy Policy from time to time to reflect changes in our practices, legal requirements, or business operations. When we make changes, we will post the updated policy on this page and update the revision date.</p>
+                <p>We encourage you to review this policy periodically to stay informed about how we protect your information. Continued use of our website and services after policy changes indicates your acceptance of the updated terms.</p>
+              </div>
+            </div>
+
+            <!-- Contact -->
+            <div class="space-y-4">
+              <h2 class="text-2xl font-bold text-gray-800 flex items-center" style="font-family: 'Playfair Display', serif;">
+                🐾 Contact Information
+              </h2>
+              <div class="prose prose-lg max-w-none" style="font-family: 'Inter', sans-serif; font-size: 1.1rem; line-height: 1.6;">
+                <p>If you have questions about this Privacy Policy, concerns about your personal information, or requests regarding your data, please don't hesitate to contact us. We are committed to addressing your privacy concerns promptly and transparently.</p>
+                <p>Your trust is essential to our breeding program's success, and we're here to ensure you feel confident about how your information is handled throughout your journey with Max Line Bulldogs.</p>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </section>
+
+    <!-- CTA Footer -->
+    <section class="bg-white py-16">
+      <div class="max-w-4xl mx-auto px-4 md:px-8 text-center">
+        <h3 class="text-3xl font-bold text-gray-800 mb-6" style="font-family: 'Playfair Display', serif;">
+          Questions About Your Privacy? 🐾
+        </h3>
+        <p class="text-lg text-gray-600 mb-8" style="font-family: 'Inter', sans-serif; line-height: 1.6;">
+          We're here to help address any concerns you may have.
+        </p>
+        <a 
+          href="/contact" 
+          class="inline-block bg-[#FF6B00] text-white font-semibold px-8 py-3 rounded-lg shadow-md hover:bg-[#e55a00] transition-colors duration-300"
+          style="font-family: 'Inter', sans-serif;"
+        >
+          Contact Us
+        </a>
+      </div>
+    </section>
+  </main>
+</Layout>
+
+<style>
+  /* Enhanced Strapi content styling */
+  .privacy-content h1,
+  .privacy-content h2,
+  .privacy-content h3 {
+    font-family: 'Playfair Display', serif !important;
+    font-weight: 700;
+    color: #1f2937;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+  }
+  
+  .privacy-content h2 {
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+  }
+  
+  .privacy-content h2::before {
+    content: '🐾 ';
+    margin-right: 0.5rem;
+  }
+  
+  .privacy-content p {
+    font-family: 'Inter', sans-serif !important;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+    color: #4b5563;
+  }
+  
+  .privacy-content ul,
+  .privacy-content ol {
+    margin: 1rem 0;
+    padding-left: 1.5rem;
+  }
+  
+  .privacy-content li {
+    font-family: 'Inter', sans-serif !important;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: #4b5563;
+    margin-bottom: 0.5rem;
+  }
+  
+  .privacy-content strong {
+    color: #1f2937;
+    font-weight: 600;
+  }
+  
+  .privacy-content em {
+    color: #FF6B00;
+  }
+</style> 

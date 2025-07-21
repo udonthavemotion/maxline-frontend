@@ -1,0 +1,349 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import Container from "@/components/container.astro";
+import { getStuds, getImageUrl, formatPrice, formatRichText, type Stud } from "@/lib/strapi";
+
+export const prerender = true;
+
+export async function getStaticPaths() {
+  try {
+    const response = await getStuds({
+      populate: '*',
+      pageSize: 100
+    });
+    return response.data.map((stud: Stud) => ({
+      params: { id: stud.documentId },
+      props: { stud }
+    }));
+  } catch (error) {
+    console.error('Detail fetch error:', error);
+    return [];
+  }
+}
+
+const { stud } = Astro.props;
+const { id } = Astro.params;
+
+// Fallback if stud not found
+if (!stud) {
+  return Astro.redirect('/studs');
+}
+
+// Robust background_video handling for all possible Strapi v5 structures
+const heroVideo = (() => {
+  if (!stud.background_video) {
+    return null;
+  }
+  
+  // Handle different possible structures from Strapi v5
+  const bgVideo = stud.background_video as any;
+  
+  // Case 1: Direct StrapiImage object
+  if (bgVideo.url) {
+    return getImageUrl(bgVideo);
+  }
+  
+  // Case 2: Wrapped in .data (common Strapi v5 structure)
+  if (bgVideo.data && bgVideo.data.url) {
+    return getImageUrl(bgVideo.data);
+  }
+  
+  // Case 3: Array with data (sometimes happens with single media)
+  if (Array.isArray(bgVideo) && bgVideo.length > 0 && bgVideo[0].url) {
+    return getImageUrl(bgVideo[0]);
+  }
+  
+  // Case 4: Array wrapped in .data
+  if (bgVideo.data && Array.isArray(bgVideo.data) && bgVideo.data.length > 0 && bgVideo.data[0].url) {
+    return getImageUrl(bgVideo.data[0]);
+  }
+  
+  return null;
+})();
+
+// Remove heroImage fallback - keep images array only for gallery context
+const galleryImages = stud.page_gallery || [];
+const backgroundColor = stud.background_color || '#f8fafc';
+---
+
+<Layout title={`${stud.name || 'Stud'} - Champion Stud`}>
+  <main class="min-h-screen" style={`background-color: ${backgroundColor};`}>
+    <!-- Enhanced Hero Section -->
+    <section class="hero relative rounded-3xl overflow-hidden h-80 md:h-96 shadow-2xl mx-4 mt-8">
+      <!-- Hero Media -->
+      {heroVideo ? (
+        <video 
+          autoplay 
+          loop 
+          muted 
+          playsinline 
+          class="absolute inset-0 w-full h-full object-cover rounded-3xl"
+          style="filter: brightness(0.8);"
+        >
+          <source src={heroVideo} type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+      ) : (
+        <!-- No background video - show gradient with message -->
+        <div class="absolute inset-0 bg-gradient-to-br from-blue-600 via-purple-600 to-blue-800 rounded-3xl">
+          <div class="absolute inset-0 flex items-center justify-center bg-black/20">
+            <div class="text-center text-white/80">
+              <svg class="w-12 h-12 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+              </svg>
+              <p class="text-sm font-medium">Background Video Not Set</p>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      <!-- Enhanced Hero Overlay -->
+      <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-black/40 rounded-3xl"></div>
+      
+      <!-- Hero Content with Better Typography -->
+      <div class="absolute inset-0 flex flex-col justify-center items-center text-center text-white z-10 p-6">
+        <h1 class="text-4xl md:text-6xl font-bold mb-6 text-shadow-lg leading-tight">
+          {stud.name || 'Unnamed Stud'}
+        </h1>
+        <div class="flex flex-col sm:flex-row gap-4 items-center">
+          <span class={`px-6 py-3 rounded-full text-sm font-bold shadow-lg backdrop-blur-sm ${
+            stud.availability === 'Available' 
+              ? 'bg-green-500/90 text-white' 
+              : stud.availability === 'Busy'
+              ? 'bg-yellow-500/90 text-white'
+              : 'bg-red-500/90 text-white'
+          }`}>
+            {stud.availability || 'Unknown'}
+          </span>
+          <span class="text-2xl md:text-3xl font-bold bg-blue-600/90 backdrop-blur-sm px-6 py-3 rounded-full shadow-lg">
+            {formatPrice(stud.fee || 0)}
+          </span>
+        </div>
+      </div>
+      
+      <!-- Enhanced Back Button -->
+      <a 
+        href="/studs" 
+        class="absolute top-6 left-6 bg-white/10 backdrop-blur-md text-white px-4 py-2 rounded-full hover:bg-white/20 transition-all duration-300 flex items-center gap-2 z-20 shadow-lg"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+        </svg>
+        Back to Studs
+      </a>
+    </section>
+
+    <Container>
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 mt-12">
+        <!-- Enhanced Gallery Section -->
+        <section class="space-y-6">
+          <h2 class="text-3xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+            </svg>
+            Gallery
+          </h2>
+          {galleryImages.length > 0 ? (
+            <div class="grid grid-cols-2 gap-4">
+              {galleryImages.map((image, index) => (
+                <div class="group relative overflow-hidden rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer">
+                  <img 
+                    src={getImageUrl(image, 'medium')} 
+                    alt={image.alternativeText || `${stud.name || 'Stud'} image ${index + 1}`}
+                    class="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500"
+                    loading="lazy"
+                  />
+                  <!-- Image Overlay -->
+                  <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
+                  <!-- Image Number -->
+                  <div class="absolute top-2 right-2 bg-white/80 backdrop-blur-sm text-gray-900 text-xs font-bold px-2 py-1 rounded-full">
+                    {index + 1}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div class="text-center py-12 text-gray-500">
+              <svg class="w-16 h-16 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+              </svg>
+              <p class="text-lg font-medium">No gallery images available</p>
+              <p class="text-sm text-gray-400 mt-2">Gallery images can be added through the admin panel</p>
+            </div>
+          )}
+        </section>
+
+        <!-- Enhanced Info Section -->
+        <section class="space-y-8">
+          <h2 class="text-3xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            About {stud.name || 'This Stud'}
+          </h2>
+          
+          <!-- Enhanced Basic Info -->
+          <div class="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-gray-100">
+            <h3 class="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+              <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+              </svg>
+              Basic Information
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+              <div class="flex items-center gap-2">
+                <span class="text-gray-600">Age:</span>
+                <span class="font-medium text-gray-900">{stud.age || 'N/A'}</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="text-gray-600">Stud Fee:</span>
+                <span class="font-bold text-blue-600 text-lg">{formatPrice(stud.fee || 0)}</span>
+              </div>
+              <div class="flex items-center gap-2 md:col-span-2">
+                <span class="text-gray-600">Status:</span>
+                <span class={`px-3 py-1 rounded-full text-xs font-bold ${
+                  stud.availability === 'Available' 
+                    ? 'bg-green-100 text-green-800' 
+                    : stud.availability === 'Busy'
+                    ? 'bg-yellow-100 text-yellow-800'
+                    : 'bg-red-100 text-red-800'
+                }`}>
+                  {stud.availability || 'Unknown'}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Enhanced Individuality Section -->
+          {stud.individuality && (
+            <div class="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-gray-100">
+              <h3 class="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path>
+                </svg>
+                Individuality
+              </h3>
+              <div class="prose prose-sm max-w-none text-gray-700" set:html={stud.individuality}></div>
+            </div>
+          )}
+
+          <!-- Enhanced Description Section -->
+          {stud.description && (
+            <div class="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-gray-100">
+              <h3 class="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+                Description
+              </h3>
+              <div class="text-gray-700 leading-relaxed">
+                {typeof stud.description === 'string' 
+                  ? stud.description 
+                  : formatRichText(stud.description)
+                }
+              </div>
+            </div>
+          )}
+
+          <!-- Enhanced Bloodlines Section -->
+          {stud.bloodlines && stud.bloodlines.trim() && (
+            <div class="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-gray-100">
+              <h3 class="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                </svg>
+                Bloodlines
+              </h3>
+              <div class="flex flex-wrap gap-2">
+                {stud.bloodlines.split(',').map((bloodline) => (
+                  <span class="bg-gradient-to-r from-purple-100 to-purple-200 text-purple-800 text-sm px-4 py-2 rounded-full font-medium shadow-sm hover:shadow-md transition-shadow">
+                    {bloodline.trim()}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <!-- Enhanced Specialties Section -->
+          {stud.specialties && stud.specialties.trim() && (
+            <div class="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-gray-100">
+              <h3 class="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path>
+                </svg>
+                Specialties
+              </h3>
+              <div class="flex flex-wrap gap-2">
+                {stud.specialties.split(',').map((specialty) => (
+                  <span class="bg-gradient-to-r from-blue-100 to-blue-200 text-blue-800 text-sm px-4 py-2 rounded-full font-medium shadow-sm hover:shadow-md transition-shadow">
+                    {specialty.trim()}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <!-- Enhanced Contact Section -->
+          <div class="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 rounded-2xl p-6 text-white shadow-lg">
+            <h3 class="text-xl font-bold mb-4 flex items-center gap-2">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
+              </svg>
+              Interested in {stud.name || 'This Stud'}?
+            </h3>
+            <p class="mb-4 text-blue-100 leading-relaxed">
+              Contact us to learn more about breeding opportunities with this champion stud. Our team will guide you through the process and answer any questions.
+            </p>
+            <a 
+              href={`/contact?stud=${encodeURIComponent(stud.name || 'Stud')}`}
+              class="inline-flex items-center gap-2 bg-white/90 backdrop-blur-sm text-blue-600 px-6 py-3 rounded-full font-bold hover:bg-white hover:scale-105 transition-all duration-300 shadow-lg"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
+              </svg>
+              Contact for Breeding
+            </a>
+          </div>
+        </section>
+      </div>
+    </Container>
+  </main>
+</Layout>
+
+<style>
+  .text-shadow-lg {
+    text-shadow: 0 4px 12px rgba(0, 0, 0, 0.8);
+  }
+  
+  .prose h1, .prose h2, .prose h3, .prose h4 {
+    margin-bottom: 1rem;
+    font-weight: 600;
+  }
+  
+  .prose p {
+    margin-bottom: 1rem;
+    line-height: 1.6;
+  }
+  
+  .prose ul, .prose ol {
+    margin-bottom: 1rem;
+    padding-left: 1.5rem;
+  }
+  
+  .prose li {
+    margin-bottom: 0.5rem;
+  }
+  
+  .hero {
+    transition: all 0.3s ease;
+  }
+  
+  .hero:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  }
+  
+  .group:hover .group-hover\:scale-110 {
+    transform: scale(1.1);
+  }
+</style> 

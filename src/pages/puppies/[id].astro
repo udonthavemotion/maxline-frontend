@@ -1,0 +1,89 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import Container from "@/components/container.astro";
+import { getPuppies, getPuppy, formatPrice, getImageUrl, type Puppy } from "@/lib/strapi";
+import PuppyHero from "@/components/puppy/PuppyHero.astro";
+import PuppyGallery from "@/components/puppy/PuppyGallery.astro";
+import PuppyInfo from "@/components/puppy/PuppyInfo.astro";
+import PuppyContact from "@/components/puppy/PuppyContact.astro";
+
+// Enable server-side rendering for dynamic puppy pages
+export const prerender = false;
+
+export async function getStaticPaths() {
+  try {
+    const response = await getPuppies({
+      populate: 'images',
+      pageSize: 100
+    });
+    
+    return response.data.map((puppy: Puppy) => ({
+      params: { id: puppy.id.toString() },
+      props: { puppy }
+    }));
+  } catch (error) {
+    console.error('Error generating puppy paths:', error);
+    return [];
+  }
+}
+
+interface Props {
+  puppy: Puppy;
+}
+
+const { puppy } = Astro.props;
+const { id } = Astro.params;
+
+// Fallback if puppy not found in static generation
+let puppyData = puppy;
+if (!puppyData && id) {
+  try {
+    const puppyId = parseInt(id);
+    if (!isNaN(puppyId)) {
+      const response = await getPuppy(puppyId, {
+        populate: 'images'
+      });
+      puppyData = response.data;
+    }
+  } catch (error) {
+    console.error('Error fetching puppy:', error);
+    return Astro.redirect('/puppies');
+  }
+}
+
+// If still no puppy, redirect to puppies page
+if (!puppyData) {
+  return Astro.redirect('/puppies');
+}
+
+// SEO data
+const pageTitle = `${puppyData.name} - English Bulldog Puppy | Max Line Bulldogs`;
+const pageDescription = `Meet ${puppyData.name}, our adorable English Bulldog puppy. ${puppyData.gender}, ${puppyData.age}. Price: ${formatPrice(puppyData.price || 0)}. Available for adoption.`;
+---
+
+<Layout 
+  title={pageTitle}
+>
+  <Container>
+    <!-- Breadcrumb Navigation -->
+    <nav class="flex items-center gap-2 text-sm text-gray-600 mb-8 pt-8">
+      <a href="/" class="hover:text-brand-blue transition-colors">Home</a>
+      <span>/</span>
+      <a href="/puppies" class="hover:text-brand-blue transition-colors">Available Puppies</a>
+      <span>/</span>
+      <span class="text-brand-navy font-medium">{puppyData.name}</span>
+    </nav>
+
+    <!-- Hero Section -->
+    <PuppyHero puppy={puppyData} />
+    
+    <!-- Media Gallery -->
+    <PuppyGallery puppy={puppyData} />
+    
+    <!-- Information Sections -->
+    <PuppyInfo puppy={puppyData} />
+    
+    <!-- Contact Section -->
+    <PuppyContact puppy={puppyData} />
+  </Container>
+</Layout> 

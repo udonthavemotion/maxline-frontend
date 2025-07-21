@@ -1,0 +1,285 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import Container from "@/components/container.astro";
+import Sectionhead from "@/components/sectionhead.astro";
+import PuppyCard from "@/components/PuppyCard.astro";
+import { getPuppies, type Puppy } from "@/lib/strapi";
+
+// Fetch puppies from Strapi
+let puppies: Puppy[] = [];
+let error: string | null = null;
+
+try {
+  const response = await getPuppies({
+    populate: '*',
+    sort: 'createdAt:desc',
+    pageSize: 50, // Adjust as needed
+  });
+  puppies = response.data;
+} catch (err) {
+  console.error('Error fetching puppies:', err);
+  error = 'Failed to load puppies. Please try again later.';
+}
+---
+
+<Layout title="Available Puppies">
+  <Container>
+    <Sectionhead>
+      <Fragment slot="title">Available Puppies</Fragment>
+      <Fragment slot="desc">
+        Browse our healthy English Bulldog puppies ready for adoption
+      </Fragment>
+    </Sectionhead>
+    
+    <main class="mt-16">
+      <!-- Error Message -->
+      {error && (
+        <div class="mb-8 mx-4 bg-red-50 border border-red-200 text-red-800 rounded-lg p-4 sm:p-6">
+          <div class="flex items-start space-x-3">
+            <div class="flex-shrink-0">
+              <svg class="w-5 h-5 text-red-400 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+              </svg>
+            </div>
+            <div class="flex-1">
+              <h3 class="text-sm font-medium text-red-800 mb-1">Unable to Load Puppies</h3>
+              <p class="text-sm text-red-700">
+                {error}
+              </p>
+              <div class="mt-4">
+                <button 
+                  onclick="window.location.reload()" 
+                  class="bg-red-100 hover:bg-red-200 text-red-800 px-3 py-1 rounded text-sm font-medium transition-colors duration-200"
+                >
+                  Try Again
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <!-- Filter Controls -->
+      <div class="mb-8 flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4">
+        <button 
+          id="filter-all"
+          class="px-4 py-3 sm:py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition-colors duration-200 font-medium min-h-[44px] text-center"
+          aria-label="Show all puppies"
+          aria-pressed="true"
+        >
+          All Puppies
+        </button>
+        <button 
+          id="filter-available"
+          class="px-4 py-3 sm:py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors duration-200 font-medium min-h-[44px] text-center"
+          aria-label="Show available puppies only"
+          aria-pressed="false"
+        >
+          Available Only
+        </button>
+        <button 
+          id="filter-reserved"
+          class="px-4 py-3 sm:py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors duration-200 font-medium min-h-[44px] text-center"
+          aria-label="Show reserved puppies only"
+          aria-pressed="false"
+        >
+          Reserved Only
+        </button>
+        <button 
+          id="filter-sold"
+          class="px-4 py-3 sm:py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors duration-200 font-medium min-h-[44px] text-center"
+          aria-label="Show sold puppies only"
+          aria-pressed="false"
+        >
+          Sold
+        </button>
+      </div>
+
+      <!-- Puppies Grid -->
+      <div id="puppies-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
+        {puppies && puppies.length > 0 ? (
+          puppies.map((puppy) => (
+            <PuppyCard puppy={puppy} />
+          ))
+        ) : (
+          <div id="no-results-message" class="col-span-full text-center py-12 px-4">
+            <h3 class="text-xl sm:text-2xl font-semibold text-gray-700">No Puppies Available</h3>
+            <p class="text-gray-500 mt-2 text-sm sm:text-base">
+              Please check back later or contact us for information on upcoming litters.
+            </p>
+          </div>
+        )}
+      </div>
+    </main>
+  </Container>
+</Layout>
+
+<script>
+  // Client-side filtering functionality
+  function initializeFilters() {
+    const filterButtons = document.querySelectorAll('[id^="filter-"]');
+    const puppyCards = document.querySelectorAll('.puppy-card');
+    const puppiesGrid = document.getElementById('puppies-grid');
+    
+    if (!puppiesGrid) return; // Exit if grid not found
+    
+    filterButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        // Add loading state
+        puppiesGrid.classList.add('filtering');
+        
+        // Small delay to show the transition
+        setTimeout(() => {
+          // Update button states
+          filterButtons.forEach(btn => {
+            btn.classList.remove('bg-blue-500', 'text-white');
+            btn.classList.add('bg-gray-200', 'text-gray-700');
+            btn.setAttribute('aria-pressed', 'false');
+          });
+          button.classList.add('bg-blue-500', 'text-white');
+          button.classList.remove('bg-gray-200', 'text-gray-700');
+          button.setAttribute('aria-pressed', 'true');
+          
+          // Filter puppies
+          const filter = button.id.replace('filter-', '');
+          let visibleCount = 0;
+          
+          puppyCards.forEach(card => {
+            const htmlCard = card as HTMLElement;
+            const status = card.getAttribute('data-status');
+            
+            if (filter === 'all') {
+              htmlCard.style.display = 'block';
+              visibleCount++;
+            } else if (filter === 'available' && status === 'Available') {
+              htmlCard.style.display = 'block';
+              visibleCount++;
+            } else if (filter === 'reserved' && status === 'Reserved') {
+              htmlCard.style.display = 'block';
+              visibleCount++;
+            } else if (filter === 'sold' && status === 'Sold') {
+              htmlCard.style.display = 'block';
+              visibleCount++;
+            } else {
+              htmlCard.style.display = 'none';
+            }
+          });
+          
+          // Show/hide no results message
+          let noResultsMessage = document.getElementById('no-results-message');
+          if (visibleCount === 0) {
+            if (!noResultsMessage) {
+              noResultsMessage = document.createElement('div');
+              noResultsMessage.id = 'no-results-message';
+              noResultsMessage.className = 'col-span-full text-center py-12 px-4';
+              noResultsMessage.innerHTML = `
+                <div class="max-w-md mx-auto">
+                  <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                  </svg>
+                  <h3 class="text-xl sm:text-2xl font-semibold text-gray-700 mb-2">No Puppies Found</h3>
+                  <p class="text-gray-500 text-sm sm:text-base">
+                    Try selecting a different filter or check back later for new puppies.
+                  </p>
+                </div>
+              `;
+              puppiesGrid.appendChild(noResultsMessage);
+            }
+            noResultsMessage.style.display = 'block';
+          } else {
+            if (noResultsMessage) {
+              noResultsMessage.style.display = 'none';
+            }
+          }
+          
+          // Remove loading state
+          puppiesGrid.classList.remove('filtering');
+          
+          // Reinitialize video functionality after filtering
+          initializeVideoFunctionality();
+        }, 150); // Small delay for smooth transition
+      });
+    });
+  }
+  
+  // Modern video functionality
+  function initializeVideoFunctionality() {
+    const videos = document.querySelectorAll('video');
+    
+    // Intersection Observer for performance - only play videos when visible
+    const videoObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        const video = entry.target as HTMLVideoElement;
+        if (entry.isIntersecting) {
+          video.play().catch(console.error);
+        } else {
+          video.pause();
+        }
+      });
+    }, {
+      threshold: 0.5, // Play when 50% of video is visible
+    });
+    
+    videos.forEach((video) => {
+      // Observe video for intersection
+      videoObserver.observe(video);
+      
+      // Click to unmute/mute functionality
+      video.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        if (video.muted) {
+          video.muted = false;
+          // Show unmute indicator
+          showVideoIndicator(video, 'UNMUTED', 'bg-green-500');
+        } else {
+          video.muted = true;
+          // Show mute indicator
+          showVideoIndicator(video, 'MUTED', 'bg-red-500');
+        }
+      });
+      
+      // Pause on hover for better UX
+      video.addEventListener('mouseenter', () => {
+        video.playbackRate = 0.8; // Slow down slightly
+      });
+      
+      video.addEventListener('mouseleave', () => {
+        video.playbackRate = 1.0; // Normal speed
+      });
+    });
+  }
+  
+  // Show temporary video indicator
+  function showVideoIndicator(video: HTMLVideoElement, text: string, bgClass: string) {
+    const indicator = document.createElement('div');
+    indicator.className = `absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 ${bgClass} text-white px-3 py-1 rounded text-sm font-medium z-10 pointer-events-none`;
+    indicator.textContent = text;
+    
+    const container = video.parentElement;
+    if (container) {
+      container.appendChild(indicator);
+      
+      // Remove after 2 seconds
+      setTimeout(() => {
+        indicator.remove();
+      }, 2000);
+    }
+  }
+  
+  // Add transition classes to grid
+  function addTransitionClasses() {
+    const puppiesGrid = document.getElementById('puppies-grid');
+    if (puppiesGrid) {
+      puppiesGrid.classList.add('filter-transition');
+    }
+  }
+  
+  // Initialize everything when DOM is loaded
+  document.addEventListener('DOMContentLoaded', () => {
+    initializeFilters();
+    addTransitionClasses();
+    initializeVideoFunctionality();
+  });
+</script> 

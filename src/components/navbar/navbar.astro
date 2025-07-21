@@ -1,0 +1,98 @@
+---
+import Container from "@/components/container.astro";
+import Link from "@/components/ui/link.astro";
+import Dropdown from "./dropdown.astro";
+import { Astronav, MenuItems, MenuIcon } from "astro-navbar";
+
+const menuitems = [
+  {
+    title: "Our Dogs",
+    path: "#",
+    children: [
+      { title: "Available Studs", path: "/studs" },
+      { title: "Available Puppies", path: "/puppies" },
+    ],
+  },
+  {
+    title: "Breeding Program",
+    path: "/breeding-program",
+  },
+  {
+    title: "Contact",
+    path: "/contact",
+  },
+];
+---
+
+<Container>
+  <header class="flex flex-col lg:flex-row justify-between items-center my-5">
+    <Astronav>
+      <div class="flex w-full lg:w-auto items-center justify-between">
+        <a href="/" class="flex items-center gap-4">
+          <!-- Primary Brand: Max Line Bulldogs -->
+          <div class="flex items-center gap-2">
+            <img 
+              src="/logos/MLBlogo2Transparent.png" 
+              alt="Max Line Bulldogs" 
+              class="h-12 w-auto object-contain"
+            />
+            <div class="hidden sm:block">
+              <div class="font-heading font-bold text-lg text-brand-navy">Max Line Bulldogs</div>
+              <div class="text-xs text-muted">Wellington, FL & UK</div>
+            </div>
+          </div>
+          
+          <!-- Partnership Indicator -->
+          <div class="hidden md:flex items-center gap-2 text-muted">
+            <span class="text-sm">×</span>
+            <img 
+              src="/logos/MrMuscleHBlogoPNG.png" 
+              alt="HorrorBullz HQ Partner" 
+              class="h-8 w-auto object-contain opacity-75"
+            />
+          </div>
+        </a>
+        <div class="block lg:hidden">
+          <MenuIcon class="w-4 h-4 text-primary" />
+        </div>
+      </div>
+      <MenuItems class="hidden w-full lg:w-auto mt-2 lg:flex lg:mt-0">
+        <ul class="flex flex-col lg:flex-row lg:gap-6">
+          {
+            menuitems.map((item, index) => (
+              <>
+                {item.children && (
+                  <Dropdown
+                    title={item.title}
+                    children={item.children}
+                    lastItem={index === menuitems.length - 1}
+                  />
+                )}
+
+                {!item.children && (
+                  <li>
+                    <a
+                      href={item.path}
+                      class="flex lg:px-3 py-2 items-center text-primary hover:text-brand-orange font-medium transition-colors">
+                      <span> {item.title}</span>
+                    </a>
+                  </li>
+                )}
+              </>
+            ))
+          }
+        </ul>
+        <div class="lg:hidden flex items-center mt-3 gap-4">
+          <Link href="/contact" style="outline" block size="md">Get Info</Link>
+          <Link href="/puppies" size="md" block>View Puppies</Link>
+        </div>
+      </MenuItems>
+    </Astronav>
+    <div>
+      <div class="hidden lg:flex items-center gap-4">
+        <Link href="/contact" style="outline" size="md">Get Info</Link>
+        <Link href="/puppies" size="md">View Puppies</Link>
+      </div>
+    </div>
+  </header>
+</Container>

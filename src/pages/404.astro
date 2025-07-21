@@ -1,0 +1,35 @@
+---
+import Container from "@/components/container.astro";
+import Layout from "@/layouts/Layout.astro";
+---
+
+<Layout title="404 Not Found">
+  <Container>
+    <div class="min-h-[calc(100vh-16rem)] flex items-center justify-center">
+      <div class="mt-16 text-center">
+        <div class="flex flex-col items-center justify-center space-y-6">
+          <!-- TODO: Replace this placeholder with your actual image path (e.g., from public/ or Strapi media URL). This is the spot to edit for custom images later. -->
+          <img 
+            src="https://placehold.co/400x300?text=Sad+Bulldog" 
+            alt="Sad bulldog indicating page not found"
+            loading="lazy"
+            class="w-80 h-60 object-cover rounded-lg shadow-medium"
+          />
+          
+          <h1 class="text-4xl lg:text-5xl font-bold lg:tracking-tight text-brand-navy">404</h1>
+          <p class="text-lg mt-4 text-secondary max-w-md">
+            Oops! This page went for a walk and got lost. Let's get you back home.
+          </p>
+          
+          <a 
+            href="/"
+            aria-label="Return to home page"
+            class="bg-brand-orange text-white px-6 py-3 rounded-lg hover:bg-brand-orange-hover transition-all duration-200 font-semibold shadow-medium hover:shadow-strong hover:scale-105"
+          >
+            Go Back Home
+          </a>
+        </div>
+      </div>
+    </div>
+  </Container>
+</Layout>

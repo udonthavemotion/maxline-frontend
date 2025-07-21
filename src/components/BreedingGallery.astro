@@ -1,0 +1,144 @@
+---
+import { getImageUrl } from "@/lib/strapi";
+import { API_CONFIG } from "@/lib/config";
+
+interface GalleryItem {
+  id: number;
+  documentId: string;
+  title: string;
+  description?: string;
+  image?: any;
+  category?: string;
+  alt_text?: string;
+}
+
+// Fetch gallery items from Strapi
+let galleryItems: GalleryItem[] = [];
+let error: string | null = null;
+
+try {
+  const response = await fetch(`${API_CONFIG.API_BASE}/gallery-items?populate=*&sort=order:asc`);
+  
+  if (response.ok) {
+    const data = await response.json();
+    galleryItems = data.data || [];
+    console.log('✅ Gallery items loaded:', galleryItems.length);
+  } else {
+    throw new Error(`HTTP ${response.status}`);
+  }
+} catch (err) {
+  console.error('⚠️ Gallery fetch error:', err);
+  error = 'Unable to load gallery items';
+  
+  // Fallback gallery items
+  galleryItems = [
+    {
+      id: 1,
+      documentId: "fallback-1",
+      title: "Champion Bloodlines",
+      description: "Our finest breeding stock",
+      category: "Breeding",
+      alt_text: "Champion Bulldogs"
+    },
+    {
+      id: 2,
+      documentId: "fallback-2", 
+      title: "Puppy Development",
+      description: "Early socialization program",
+      category: "Puppies",
+      alt_text: "Bulldog Puppies"
+    },
+    {
+      id: 3,
+      documentId: "fallback-3",
+      title: "Health Testing",
+      description: "Comprehensive health screening",
+      category: "Health",
+      alt_text: "Health Testing"
+    }
+  ];
+}
+---
+
+{galleryItems.length > 0 && (
+  <section class="py-20 px-6 md:px-12 bg-gradient-to-br from-gray-50 to-blue-50">
+    <div class="max-w-7xl mx-auto">
+      
+      <div class="text-center mb-16">
+        <h2 class="text-4xl md:text-5xl font-bold text-gray-800 mb-4">
+          Our Breeding Legacy 📸
+        </h2>
+        <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+          Explore our world-class facilities, champion bloodlines, and the dedication behind every Max Line Bulldog
+        </p>
+      </div>
+      
+      <!-- Masonry Gallery Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+        {galleryItems.map((item, index) => (
+          <div class="group relative overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 hover:scale-105 bg-white">
+            
+            {/* Image */}
+            {item.image ? (
+              <img 
+                src={getImageUrl(item.image, 'medium')} 
+                alt={item.alt_text || item.title}
+                class="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-700"
+                loading={index < 4 ? 'eager' : 'lazy'}
+              />
+            ) : (
+              <div class="w-full h-64 bg-gradient-to-br from-orange-200 to-orange-400 flex items-center justify-center">
+                <div class="text-white text-4xl">📸</div>
+              </div>
+            )}
+            
+            {/* Content Overlay */}
+            <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              <div class="absolute bottom-0 left-0 right-0 p-6">
+                <h3 class="text-white font-bold text-lg mb-2">{item.title}</h3>
+                {item.description && (
+                  <p class="text-white/90 text-sm leading-relaxed">{item.description}</p>
+                )}
+              </div>
+            </div>
+            
+            {/* Category Badge */}
+            {item.category && (
+              <div class="absolute top-4 left-4 bg-orange-500 text-white px-3 py-1 rounded-full text-xs font-medium">
+                {item.category}
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+      
+      {/* Error State */}
+      {error && (
+        <div class="text-center py-12">
+          <div class="text-6xl mb-4">🏗️</div>
+          <h3 class="text-2xl font-bold text-gray-800 mb-4">Gallery Loading</h3>
+          <p class="text-gray-600">
+            Gallery items will appear here once your Strapi Cloud URL is configured.
+          </p>
+        </div>
+      )}
+      
+    </div>
+  </section>
+)}
+
+<style>
+  /* Masonry effect for larger screens */
+  @media (min-width: 1024px) {
+    .grid {
+      columns: 4;
+      column-gap: 2rem;
+    }
+    
+    .grid > div {
+      display: inline-block;
+      width: 100%;
+      margin-bottom: 2rem;
+    }
+  }
+</style> 

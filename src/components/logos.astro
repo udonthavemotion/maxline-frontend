@@ -1,0 +1,50 @@
+---
+// @ts-ignore
+import { Icon } from "astro-icon/components";
+
+// This component will now just show logos/partnerships instead of featured dogs
+const partners = [
+  {
+    name: "Wellington, Florida",
+    description: "Based in Wellington, Florida",
+    icon: "bx:bxs-map"
+  },
+  {
+    name: "UK Operations",
+    description: "International breeding program",
+    icon: "bx:world"
+  },
+  {
+    name: "HorrorBullz HQ",
+    description: "Partnership with HorrorBullz HQ",
+    icon: "bx:bxs-crown"
+  }
+];
+---
+
+<div class="mt-24 px-4">
+  <div class="text-center mb-16">
+    <h2 class="font-heading text-4xl lg:text-5xl font-bold text-brand-navy mb-4">
+      Our <span class="text-brand-blue">Operations</span>
+    </h2>
+    <p class="text-lg text-secondary max-w-2xl mx-auto">
+      Strategic breeding operations spanning two continents, bringing you the finest English Bulldogs.
+    </p>
+  </div>
+
+  <div class="grid sm:grid-cols-3 gap-6 md:gap-8 max-w-4xl mx-auto">
+    {partners.map((partner) => (
+      <div class="text-center p-6 bg-white rounded-lg shadow-medium hover:shadow-strong transition-all duration-300">
+        <div class="w-16 h-16 bg-gradient-to-br from-brand-blue to-brand-orange rounded-full flex items-center justify-center mx-auto mb-4">
+          <Icon class="w-8 h-8 text-white" name={partner.icon} />
+        </div>
+        <h3 class="font-heading font-semibold text-xl text-brand-navy mb-2">
+          {partner.name}
+        </h3>
+        <p class="text-secondary text-sm">
+          {partner.description}
+        </p>
+      </div>
+    ))}
+  </div>
+</div>

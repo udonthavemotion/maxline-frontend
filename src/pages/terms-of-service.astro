@@ -1,0 +1,263 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { getTermsOfService, getImageUrl, formatRichText, formatDate, type TermsOfService } from "@/lib/strapi";
+
+// Fetch terms of service data from Strapi
+let termsOfService: TermsOfService | null = null;
+let error: string | null = null;
+
+try {
+  const response = await getTermsOfService();
+  termsOfService = response.data;
+  console.log('✅ Terms of service loaded from Strapi');
+} catch (err) {
+  console.error('⚠️ Terms of service fetch failed, using fallback:', err);
+  error = 'Unable to load content from Strapi. Please check your configuration.';
+  
+  // Fallback data
+  termsOfService = {
+    id: 1,
+    documentId: "fallback",
+    title: "Terms of Service",
+    content: [], // Will use fallback content in template
+    company_logo: undefined,
+    lastupdated: new Date().toISOString(),
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    publishedAt: new Date().toISOString(),
+  };
+}
+
+// Format the content - either from Strapi or fallback
+const hasContentFromStrapi = termsOfService?.content && termsOfService.content.length > 0;
+const contentHtml = hasContentFromStrapi ? formatRichText(termsOfService.content) : null;
+
+// Get company logo URL if available
+const logoUrl = termsOfService?.company_logo ? getImageUrl(termsOfService.company_logo, 'medium') : null;
+---
+
+<Layout title="Terms of Service">
+  <!-- Google Fonts for Playfair Display -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" slot="head">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin slot="head">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet" slot="head">
+
+  <main class="bg-[#F5F0E8] min-h-screen">
+    <!-- Hero Section -->
+    <section class="bg-[#F5F0E8] pt-20 pb-16">
+      <div class="max-w-4xl mx-auto px-4 md:px-8 text-center">
+        <!-- Company Logo -->
+        {logoUrl && (
+          <div class="mb-6">
+            <img 
+              src={logoUrl} 
+              alt="Max Line Bulldogs Logo" 
+              class="mx-auto h-16 w-auto object-contain"
+            />
+          </div>
+        )}
+        
+        <h1 class="text-5xl md:text-6xl font-bold text-gray-800 mb-4" style="font-family: 'Playfair Display', serif;">
+          {termsOfService?.title || 'Terms of Service'} 🐾
+        </h1>
+        <p class="text-xl text-gray-600 font-medium" style="font-family: 'Inter', sans-serif;">
+          Our Commitment to Fair Practices
+        </p>
+        
+        {termsOfService?.lastupdated && (
+          <p class="text-sm text-gray-500 mt-4" style="font-family: 'Inter', sans-serif;">
+            Last updated: {formatDate(termsOfService.lastupdated)}
+          </p>
+        )}
+      </div>
+    </section>
+
+    <!-- Content Section -->
+    <section class="max-w-4xl mx-auto px-4 md:px-8 pb-20">
+      <div class="bg-white rounded-lg shadow-md p-8 md:p-12">
+        {hasContentFromStrapi && contentHtml ? (
+          <div 
+            class="prose prose-lg max-w-none terms-content" 
+            style="font-family: 'Inter', sans-serif; font-size: 1.1rem; line-height: 1.6;"
+            set:html={contentHtml}
+          />
+        ) : (
+          <div class="space-y-12">
+            <!-- Introduction -->
+            <div class="space-y-4">
+              <h2 class="text-2xl font-bold text-gray-800 flex items-center" style="font-family: 'Playfair Display', serif;">
+                🐾 Introduction
+              </h2>
+              <div class="prose prose-lg max-w-none" style="font-family: 'Inter', sans-serif; font-size: 1.1rem; line-height: 1.6;">
+                <p>Welcome to Max Line Bulldogs. These Terms of Service govern your use of our website, services, and any transactions related to our English Bulldog breeding program. By accessing our website or engaging with our services, you agree to be bound by these terms.</p>
+                <p>Our commitment is to ethical breeding practices, transparent communication, and the responsible placement of our bulldogs in loving homes. These terms ensure clarity for both our clients and our business in all interactions and transactions.</p>
+              </div>
+            </div>
+
+            <!-- Services Provided -->
+            <div class="space-y-4">
+              <h2 class="text-2xl font-bold text-gray-800 flex items-center" style="font-family: 'Playfair Display', serif;">
+                🐾 Services Provided
+              </h2>
+              <div class="prose prose-lg max-w-none" style="font-family: 'Inter', sans-serif; font-size: 1.1rem; line-height: 1.6;">
+                <p>Max Line Bulldogs specializes in premium English Bulldog breeding, offering healthy puppies from champion bloodlines. Our services include puppy sales, breeding consultations, stud services, and ongoing support for bulldog owners. We work in partnership with HorrorBullz HQ to provide access to exceptional genetic lines.</p>
+                <p>We also provide educational resources about bulldog care, health maintenance, and breeding practices. Our breeding program focuses on health testing, genetic diversity, and maintaining breed standards while prioritizing the welfare of our animals above all else.</p>
+              </div>
+            </div>
+
+            <!-- User Obligations -->
+            <div class="space-y-4">
+              <h2 class="text-2xl font-bold text-gray-800 flex items-center" style="font-family: 'Playfair Display', serif;">
+                🐾 User Obligations
+              </h2>
+              <div class="prose prose-lg max-w-none" style="font-family: 'Inter', sans-serif; font-size: 1.1rem; line-height: 1.6;">
+                <p>Clients are expected to provide accurate information about their living situation, experience with bulldogs, and intended care arrangements. You must be prepared to meet the specific needs of English Bulldogs, including potential health considerations, exercise requirements, and grooming needs.</p>
+                <p>By purchasing a puppy from us, you agree to provide appropriate veterinary care, maintain the dog's health and well-being, and contact us if you are ever unable to care for the animal. You also agree not to resell our dogs to pet stores or puppy mills.</p>
+              </div>
+            </div>
+
+            <!-- Payment Terms -->
+            <div class="space-y-4">
+              <h2 class="text-2xl font-bold text-gray-800 flex items-center" style="font-family: 'Playfair Display', serif;">
+                🐾 Payment Terms
+              </h2>
+              <div class="prose prose-lg max-w-none" style="font-family: 'Inter', sans-serif; font-size: 1.1rem; line-height: 1.6;">
+                <p>Payment terms are established on a per-transaction basis and communicated clearly before any commitment. We typically require a deposit to reserve a puppy, with the balance due before pickup or delivery. All payments must be made through agreed-upon methods and are subject to our refund policy.</p>
+                <p>Prices include initial veterinary care, vaccinations, and health documentation as specified in individual agreements. Additional services such as extended health guarantees, training, or special delivery arrangements may incur additional fees that will be clearly communicated upfront.</p>
+              </div>
+            </div>
+
+            <!-- Liability and Disclaimers -->
+            <div class="space-y-4">
+              <h2 class="text-2xl font-bold text-gray-800 flex items-center" style="font-family: 'Playfair Display', serif;">
+                🐾 Liability and Disclaimers
+              </h2>
+              <div class="prose prose-lg max-w-none" style="font-family: 'Inter', sans-serif; font-size: 1.1rem; line-height: 1.6;">
+                <p>While we take every precaution to ensure the health and quality of our bulldogs, we cannot guarantee against all future health issues, behavioral concerns, or other matters beyond our direct control. Our health guarantees are limited to specific conditions and timeframes as outlined in individual contracts.</p>
+                <p>Max Line Bulldogs is not liable for any indirect, incidental, or consequential damages. Our maximum liability is limited to the purchase price of the animal. Clients are encouraged to obtain pet insurance and understand the inherent responsibilities and potential costs of dog ownership.</p>
+              </div>
+            </div>
+
+            <!-- Termination -->
+            <div class="space-y-4">
+              <h2 class="text-2xl font-bold text-gray-800 flex items-center" style="font-family: 'Playfair Display', serif;">
+                🐾 Termination
+              </h2>
+              <div class="prose prose-lg max-w-none" style="font-family: 'Inter', sans-serif; font-size: 1.1rem; line-height: 1.6;">
+                <p>We reserve the right to refuse service to anyone and terminate agreements if terms are not met or if we believe the placement would not be in the best interest of our animals. This includes situations where false information has been provided or where adequate care cannot be ensured.</p>
+                <p>Clients may cancel agreements subject to our cancellation policy, which varies based on the timing and circumstances. Early cancellations may result in forfeiture of deposits, while cancellations due to unforeseen circumstances may be handled on a case-by-case basis.</p>
+              </div>
+            </div>
+
+            <!-- Governing Law -->
+            <div class="space-y-4">
+              <h2 class="text-2xl font-bold text-gray-800 flex items-center" style="font-family: 'Playfair Display', serif;">
+                🐾 Governing Law
+              </h2>
+              <div class="prose prose-lg max-w-none" style="font-family: 'Inter', sans-serif; font-size: 1.1rem; line-height: 1.6;">
+                <p>These terms are governed by the laws of the state of Florida, United States, where our primary operations are based. Any disputes will be resolved through the appropriate legal channels in Florida jurisdiction, with preference given to mediation and arbitration where possible.</p>
+                <p>Our breeding practices comply with local, state, and federal regulations regarding animal welfare, breeding operations, and business practices. We maintain all required licenses and follow industry best practices for ethical breeding operations.</p>
+              </div>
+            </div>
+
+            <!-- Changes to Terms -->
+            <div class="space-y-4">
+              <h2 class="text-2xl font-bold text-gray-800 flex items-center" style="font-family: 'Playfair Display', serif;">
+                🐾 Changes to Terms
+              </h2>
+              <div class="prose prose-lg max-w-none" style="font-family: 'Inter', sans-serif; font-size: 1.1rem; line-height: 1.6;">
+                <p>We may update these Terms of Service from time to time to reflect changes in our business practices, legal requirements, or industry standards. Updated terms will be posted on our website with clear indication of revision dates and significant changes.</p>
+                <p>Existing contracts and agreements remain bound by the terms in effect at the time of signing. New terms apply to future transactions and website usage. We encourage regular review of these terms to stay informed of any updates.</p>
+              </div>
+            </div>
+
+            <!-- Contact -->
+            <div class="space-y-4">
+              <h2 class="text-2xl font-bold text-gray-800 flex items-center" style="font-family: 'Playfair Display', serif;">
+                🐾 Contact Information
+              </h2>
+              <div class="prose prose-lg max-w-none" style="font-family: 'Inter', sans-serif; font-size: 1.1rem; line-height: 1.6;">
+                <p>If you have questions about these Terms of Service, need clarification on any policies, or wish to discuss specific arrangements for your bulldog purchase, please contact us directly. We believe in clear communication and are happy to address any concerns before you commit to working with us.</p>
+                <p>Our goal is to build lasting relationships with our clients based on trust, transparency, and shared commitment to the welfare of these wonderful dogs. We're here to support you throughout your journey with Max Line Bulldogs.</p>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </section>
+
+    <!-- CTA Footer -->
+    <section class="bg-white py-16">
+      <div class="max-w-4xl mx-auto px-4 md:px-8 text-center">
+        <h3 class="text-3xl font-bold text-gray-800 mb-6" style="font-family: 'Playfair Display', serif;">
+          Questions About Our Terms? 🐾
+        </h3>
+        <p class="text-lg text-gray-600 mb-8" style="font-family: 'Inter', sans-serif; line-height: 1.6;">
+          We're committed to transparency in all our practices.
+        </p>
+        <a 
+          href="/contact" 
+          class="inline-block bg-[#FF6B00] text-white font-semibold px-8 py-3 rounded-lg shadow-md hover:bg-[#e55a00] transition-colors duration-300"
+          style="font-family: 'Inter', sans-serif;"
+        >
+          Contact Us
+        </a>
+      </div>
+    </section>
+  </main>
+</Layout>
+
+<style>
+  /* Enhanced Strapi content styling */
+  .terms-content h1,
+  .terms-content h2,
+  .terms-content h3 {
+    font-family: 'Playfair Display', serif !important;
+    font-weight: 700;
+    color: #1f2937;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+  }
+  
+  .terms-content h2 {
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+  }
+  
+  .terms-content h2::before {
+    content: '🐾 ';
+    margin-right: 0.5rem;
+  }
+  
+  .terms-content p {
+    font-family: 'Inter', sans-serif !important;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+    color: #4b5563;
+  }
+  
+  .terms-content ul,
+  .terms-content ol {
+    margin: 1rem 0;
+    padding-left: 1.5rem;
+  }
+  
+  .terms-content li {
+    font-family: 'Inter', sans-serif !important;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: #4b5563;
+    margin-bottom: 0.5rem;
+  }
+  
+  .terms-content strong {
+    color: #1f2937;
+    font-weight: 600;
+  }
+  
+  .terms-content em {
+    color: #FF6B00;
+  }
+</style> 

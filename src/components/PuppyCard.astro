@@ -1,0 +1,112 @@
+---
+import { formatPrice, formatRichText, getImageUrl, isVideo, type Puppy } from "@/lib/strapi";
+
+interface Props {
+  puppy: Puppy;
+}
+
+const { puppy } = Astro.props;
+---
+
+<article 
+  class="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 puppy-card"
+  data-status={puppy.avaliable}
+  onclick={`window.location.href='/puppies/${puppy.id}'`}
+>
+  <div class="relative photo-hover">
+    {puppy.images && puppy.images.length > 0 ? (
+      isVideo(puppy.images[0]) ? (
+        <div class="relative w-full h-64 overflow-hidden">
+          <video 
+            src={getImageUrl(puppy.images[0])}
+            class="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+            autoplay
+            muted
+            loop
+            playsinline
+            preload="auto"
+          >
+            Your browser does not support the video tag.
+          </video>
+          <!-- Video indicator -->
+          <div class="absolute top-2 right-2 bg-black/50 backdrop-blur-sm text-white px-2 py-1 rounded text-xs font-medium">
+            VIDEO
+          </div>
+          <!-- Subtle play indicator overlay -->
+          <div class="absolute inset-0 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-300 bg-black/20">
+            <div class="w-12 h-12 bg-white/80 rounded-full flex items-center justify-center backdrop-blur-sm">
+              <svg class="w-6 h-6 text-gray-800 ml-1" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <img 
+          src={getImageUrl(puppy.images[0], 'medium')}
+          alt={puppy.images[0].alternativeText ? puppy.images[0].alternativeText : `${puppy.name} puppy`}
+          loading="lazy"
+          class="w-full h-64 object-cover transition-transform duration-300 hover:scale-105"
+        />
+      )
+    ) : (
+      <img 
+        src="https://placehold.co/400x300?text=No+Image"
+        alt={`${puppy.name} puppy`}
+        loading="lazy"
+        class="w-full h-64 object-cover transition-transform duration-300 hover:scale-105"
+      />
+    )}
+    <!-- Hover overlay text -->
+    <div class="overlay-text">
+      <h3 class="text-xl font-bold">{puppy.name}</h3>
+      <p class="text-lg">{formatPrice(puppy.price)}</p>
+    </div>
+    <!-- Status badge in top right -->
+    <div class="absolute top-3 right-3">
+      <span class={`text-white text-xs font-bold px-3 py-1 rounded-full ${
+        puppy.avaliable === 'Available' 
+          ? 'bg-green-500' 
+          : puppy.avaliable === 'Reserved'
+          ? 'bg-yellow-500'
+          : puppy.avaliable === 'Sold'
+          ? 'bg-red-500'
+          : 'bg-gray-500'
+      }`}>
+        {puppy.avaliable || 'Unknown'}
+      </span>
+    </div>
+  </div>
+  
+  <div class="p-6">
+    <div class="flex items-center justify-between mb-3">
+      <h3 class="text-xl font-bold text-gray-900">{puppy.name}</h3>
+      <div class="flex items-center gap-2 text-gray-600">
+        <span class="text-sm">{puppy.age || 'Age not specified'}</span>
+      </div>
+    </div>
+    
+    <div class="mb-3 text-sm text-gray-600">
+      <p><strong>Price:</strong> {formatPrice(puppy.price)}</p>
+      {puppy.gender && <p><strong>Gender:</strong> {puppy.gender}</p>}
+      {puppy.age && <p><strong>Age:</strong> {puppy.age}</p>}
+    </div>
+    
+    {puppy.description && (
+      <p class="text-gray-600 text-sm mb-4 line-clamp-3">
+        {typeof puppy.description === 'string' 
+          ? puppy.description 
+          : formatRichText(puppy.description)
+        }
+      </p>
+    )}
+    
+    <a 
+      href={`/contact?puppy=${encodeURIComponent(puppy.name)}`}
+      class="w-full bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors duration-200 font-medium text-center block"
+      aria-label={`Inquire about ${puppy.name}`}
+    >
+      Inquire Now
+    </a>
+  </div>
+</article> 

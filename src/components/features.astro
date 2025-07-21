@@ -1,0 +1,105 @@
+---
+// @ts-ignore
+import { Icon } from "astro-icon/components";
+
+const features = [
+  {
+    title: "Strategic Imports",
+    description:
+      "We bring the world's most exceptional English Bulldogs to the UK, carefully selecting quality breeding stock from renowned breeders globally to elevate our breeding program.",
+    icon: "bx:bxs-plane",
+  },
+  {
+    title: "Exotic Color Genetics",
+    description:
+      "Specializing in rare and exotic color combinations, we produce some of the most unique and stunning English Bulldogs with extraordinary genetic diversity.",
+    icon: "bx:bxs-palette",
+  },
+  {
+    title: "Cultural Influence",
+    description:
+      "HorrorBullz HQ is shifting the UK bulldog scene, setting new standards for quality, ethics, and innovation in English Bulldog breeding practices.",
+    icon: "bx:bxs-star",
+  },
+  {
+    title: "Thematic Naming",
+    description:
+      "Our dogs carry names inspired by movies, music, and pop culture, creating memorable identities that reflect their unique personalities and our creative approach.",
+    icon: "bx:bxs-movie",
+  },
+  {
+    title: "Health Excellence",
+    description:
+      "Every breeding dog undergoes comprehensive health screening including heart, spine, and respiratory testing to ensure the healthiest puppies possible.",
+    icon: "bx:bxs-shield",
+  },
+  {
+    title: "Premium Care",
+    description:
+      "From whelping to weaning, our puppies receive exceptional nutrition, veterinary care, and socialization in our state-of-the-art UK facilities.",
+    icon: "bx:bxs-heart",
+  },
+];
+---
+
+<div class="mt-16 md:mt-24 px-4">
+  <div class="text-center mb-16">
+    <h2 class="font-heading text-4xl lg:text-5xl font-bold text-brand-navy mb-4">
+      Why Choose 
+              <span class="text-brand-blue">Max Line Bulldogs</span>
+    </h2>
+    
+    <!-- Section divider -->
+    <div class="w-24 h-1 bg-gradient-to-r from-brand-blue to-brand-orange rounded-full mx-auto mb-6"></div>
+    
+    <p class="text-lg text-secondary max-w-3xl mx-auto leading-relaxed">
+      Experience the difference of working with premium English Bulldog breeders. 
+      We're revolutionizing the breeding scene with passion, dedication, and uncompromising quality.
+    </p>
+  </div>
+  
+  <!-- Features Grid -->
+  <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+    {
+      features.map((feature) => (
+        <div class="card hover:shadow-strong group">
+          <div class="flex items-start gap-4">
+            <div class="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-brand-blue to-brand-orange rounded-lg flex items-center justify-center shadow-medium group-hover:scale-110 transition-transform duration-200">
+              <Icon class="w-6 h-6 text-white" name={feature.icon} />
+            </div>
+            <div>
+              <h3 class="font-heading font-semibold text-xl text-brand-navy mb-2">
+                {feature.title}
+              </h3>
+              <p class="text-secondary leading-relaxed">
+                {feature.description}
+              </p>
+            </div>
+          </div>
+        </div>
+      ))
+    }
+  </div>
+  
+  <!-- CTA Section -->
+  <div class="mt-16 text-center">
+    <div class="bg-gradient-to-r from-brand-blue/5 to-brand-orange/5 rounded-2xl p-8 border border-neutral-200">
+      <h3 class="font-heading text-2xl font-bold text-brand-navy mb-4">
+        Ready to Find Your Perfect Companion?
+      </h3>
+      <p class="text-secondary mb-6 max-w-2xl mx-auto">
+        Browse our current selection of champion studs and available puppies, each one representing the pinnacle of English Bulldog breeding excellence.
+      </p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <a href="/studs" class="cta-primary">
+          <Icon class="w-5 h-5 mr-2" name="bx:bxs-crown" />
+          View Champion Studs
+        </a>
+        <a href="/puppies" class="cta-secondary">
+          <Icon class="w-5 h-5 mr-2" name="bx:bxs-heart" />
+          See Available Puppies
+        </a>
+      </div>
+    </div>
+  </div>
+</div>

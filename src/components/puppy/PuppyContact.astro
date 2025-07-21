@@ -1,0 +1,267 @@
+---
+import { Icon } from "astro-icon/components";
+import { formatPrice, type Puppy } from "@/lib/strapi";
+
+interface Props {
+  puppy: Puppy;
+}
+
+const { puppy } = Astro.props;
+---
+
+<section id="contact" class="py-16 bg-secondary">
+  <div class="max-w-6xl mx-auto px-4">
+    <div class="text-center mb-12">
+      <h2 class="text-4xl font-heading font-bold text-brand-navy mb-4">
+        {puppy.avaliable === 'Available' ? `Adopt ${puppy.name}` : `Inquire About ${puppy.name}`}
+      </h2>
+      <p class="text-lg text-secondary">
+        {puppy.avaliable === 'Available' 
+          ? 'Ready to welcome this adorable puppy into your family? Contact us to get started!'
+          : 'This puppy may not be available, but we can help you find the perfect match.'
+        }
+      </p>
+    </div>
+    
+    <div class="grid lg:grid-cols-2 gap-12">
+      <!-- Contact Form -->
+      <div class="bg-white rounded-xl shadow-lg p-8">
+        <h3 class="text-2xl font-heading font-bold text-brand-navy mb-6 flex items-center gap-2">
+          <Icon class="w-6 h-6 text-brand-blue" name="bx:bxs-envelope" />
+          Adoption Inquiry Form
+        </h3>
+        
+        <form class="space-y-6" action="https://api.web3forms.com/submit" method="POST">
+          <input type="hidden" name="access_key" value="YOUR_ACCESS_KEY_HERE" />
+          <input type="hidden" name="subject" value={`Adoption Inquiry for ${puppy.name}`} />
+          <input type="hidden" name="puppy_name" value={puppy.name} />
+          <input type="hidden" name="puppy_price" value={formatPrice(puppy.price)} />
+          <input type="hidden" name="puppy_status" value={puppy.avaliable} />
+          <input type="hidden" name="from_page" value={`/puppies/${puppy.id}`} />
+          
+          <div class="grid sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                First Name *
+              </label>
+              <input 
+                type="text" 
+                name="first_name" 
+                required
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-blue focus:border-transparent transition-colors"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                Last Name *
+              </label>
+              <input 
+                type="text" 
+                name="last_name" 
+                required
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-blue focus:border-transparent transition-colors"
+              />
+            </div>
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              Email Address *
+            </label>
+            <input 
+              type="email" 
+              name="email" 
+              required
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-blue focus:border-transparent transition-colors"
+            />
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              Phone Number
+            </label>
+            <input 
+              type="tel" 
+              name="phone"
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-blue focus:border-transparent transition-colors"
+            />
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              Tell us about your family and home *
+            </label>
+            <textarea 
+              name="message" 
+              rows="5" 
+              required
+              placeholder="Please share details about your family, home environment, experience with dogs, and why you're interested in ${puppy.name}..."
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-blue focus:border-transparent transition-colors"
+            ></textarea>
+          </div>
+          
+          <div class="flex items-center gap-2">
+            <input 
+              type="checkbox" 
+              id="terms" 
+              name="terms" 
+              required
+              class="w-4 h-4 text-brand-blue focus:ring-brand-blue border-gray-300 rounded"
+            />
+            <label for="terms" class="text-sm text-gray-700">
+              I agree to be contacted regarding the adoption of {puppy.name} and understand this is a commitment
+            </label>
+          </div>
+          
+          <button 
+            type="submit"
+            class="w-full bg-brand-blue hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2"
+          >
+            <Icon class="w-5 h-5" name="bx:bxs-send" />
+            Send Inquiry
+          </button>
+        </form>
+      </div>
+      
+      <!-- Contact Information -->
+      <div class="space-y-6">
+        <!-- Puppy Details Card -->
+        <div class="bg-gradient-to-br from-brand-blue to-purple-600 text-white rounded-xl p-8 shadow-lg">
+          <h3 class="text-2xl font-heading font-bold mb-6 flex items-center gap-2">
+            <Icon class="w-6 h-6 text-brand-orange" name="bx:bxs-info-circle" />
+            Puppy Details
+          </h3>
+          
+          <div class="space-y-4">
+            <div class="flex items-center gap-3">
+              <Icon class="w-5 h-5 text-brand-orange" name="bx:bxs-dollar-circle" />
+              <div>
+                <span class="text-sm text-neutral-300">Price</span>
+                <div class="text-xl font-bold">{formatPrice(puppy.price)}</div>
+              </div>
+            </div>
+            
+            <div class="flex items-center gap-3">
+              <Icon class="w-5 h-5 text-brand-orange" name="bx:bxs-check-circle" />
+              <div>
+                <span class="text-sm text-neutral-300">Status</span>
+                <div class="text-lg font-medium capitalize">{puppy.avaliable}</div>
+              </div>
+            </div>
+            
+            {puppy.age && (
+              <div class="flex items-center gap-3">
+                <Icon class="w-5 h-5 text-brand-orange" name="bx:bxs-calendar" />
+                <div>
+                  <span class="text-sm text-neutral-300">Age</span>
+                  <div class="text-lg font-medium">{puppy.age}</div>
+                </div>
+              </div>
+            )}
+            
+            {puppy.gender && (
+              <div class="flex items-center gap-3">
+                <Icon class="w-5 h-5 text-brand-orange" name="bx:bxs-user" />
+                <div>
+                  <span class="text-sm text-neutral-300">Gender</span>
+                  <div class="text-lg font-medium">{puppy.gender}</div>
+                </div>
+              </div>
+            )}
+            
+            <div class="pt-4 border-t border-white/20">
+              <p class="text-sm text-neutral-300">
+                All puppies come with health certificates, first vaccinations, and lifetime breeder support.
+              </p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Contact Information Card -->
+        <div class="bg-white rounded-xl shadow-lg p-8 border border-gray-100">
+          <h3 class="text-2xl font-heading font-bold text-brand-navy mb-6 flex items-center gap-2">
+            <Icon class="w-6 h-6 text-brand-blue" name="bx:bxs-phone" />
+            Contact Information
+          </h3>
+          
+          <div class="space-y-4">
+            <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+              <Icon class="w-5 h-5 text-brand-blue" name="bx:bxs-phone" />
+              <div>
+                <span class="text-sm text-gray-600">Phone</span>
+                <div class="text-lg font-medium">
+                  <a href="tel:561-516-2560" class="hover:text-brand-blue transition-colors">
+                    561-516-2560
+                  </a>
+                </div>
+              </div>
+            </div>
+            
+            <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+              <Icon class="w-5 h-5 text-brand-blue" name="bx:bxs-envelope" />
+              <div>
+                <span class="text-sm text-gray-600">Email</span>
+                <div class="text-lg font-medium">
+                  <a href="mailto:maxlinebulldogs@gmail.com" class="hover:text-brand-blue transition-colors">
+                    maxlinebulldogs@gmail.com
+                  </a>
+                </div>
+              </div>
+            </div>
+            
+            <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+              <Icon class="w-5 h-5 text-brand-blue" name="bx:bxs-map" />
+              <div>
+                <span class="text-sm text-gray-600">Location</span>
+                <div class="text-lg font-medium">Wellington, Florida</div>
+              </div>
+            </div>
+            
+            <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+              <Icon class="w-5 h-5 text-brand-blue" name="bx:bxs-time" />
+              <div>
+                <span class="text-sm text-gray-600">Response Time</span>
+                <div class="text-lg font-medium">Within 24 hours</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Quick Actions -->
+        <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
+          <h4 class="text-lg font-heading font-bold text-brand-navy mb-4">
+            Quick Actions
+          </h4>
+          <div class="space-y-3">
+            <a 
+              href="/puppies" 
+              class="w-full bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-3 rounded-lg transition-colors flex items-center gap-2"
+            >
+              <Icon class="w-4 h-4" name="bx:bx-arrow-back" />
+              Back to All Puppies
+            </a>
+            
+            <a 
+              href="tel:561-516-2560" 
+              class="w-full bg-brand-orange hover:bg-orange-600 text-white px-4 py-3 rounded-lg transition-colors flex items-center gap-2"
+            >
+              <Icon class="w-4 h-4" name="bx:bxs-phone" />
+              Call Now
+            </a>
+            
+            {puppy.avaliable === 'Available' && (
+              <a 
+                href="#" 
+                class="w-full bg-brand-blue hover:bg-blue-700 text-white px-4 py-3 rounded-lg transition-colors flex items-center gap-2"
+                onclick="document.querySelector('form').scrollIntoView({ behavior: 'smooth' }); return false;"
+              >
+                <Icon class="w-4 h-4" name="bx:bxs-heart" />
+                Adopt {puppy.name}
+              </a>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section> 

@@ -1,0 +1,60 @@
+---
+import Contactform from "@/components/contactform.astro";
+import Container from "@/components/container.astro";
+import Sectionhead from "@/components/sectionhead.astro";
+import Layout from "@/layouts/Layout.astro";
+import { Icon } from "astro-icon/components";
+---
+
+<Layout title="Contact">
+  <Container>
+    <Sectionhead>
+      <Fragment slot="title">Contact</Fragment>
+      <Fragment slot="desc">We are here to help with all your English Bulldog needs.</Fragment>
+    </Sectionhead>
+
+    <div class="grid md:grid-cols-2 gap-10 mx-auto max-w-4xl mt-16">
+      <div>
+        <h2 class="font-medium text-2xl text-gray-800">Contact Maxline Bulldogs</h2>
+        <p class="text-lg leading-relaxed text-slate-500 mt-3">
+          Ready to welcome a legendary English Bulldog into your family? 
+          Contact CEO Mike and our team for personalized breeding consultation.
+        </p>
+        <div class="mt-5">
+          <div class="flex items-center mt-2 space-x-2 text-gray-600">
+            <Icon class="text-gray-400 w-4 h-4" name="uil:map-marker" />
+            <span>Wellington, Florida & United Kingdom</span>
+          </div>
+          <div class="flex items-center mt-2 space-x-2 text-gray-600">
+            <Icon class="text-gray-400 w-4 h-4" name="uil:phone" />
+            <a href="tel:+15615162560">561-516-2560</a>
+          </div>
+          <div class="flex items-center mt-2 space-x-2 text-gray-600">
+            <Icon class="text-gray-400 w-4 h-4" name="uil:envelope" />
+            <a href="mailto:maxlinebulldogs@gmail.com">maxlinebulldogs@gmail.com</a>
+          </div>
+        </div>
+        
+        <div class="mt-6 p-4 bg-blue-50 rounded-lg">
+          <h3 class="font-semibold text-gray-800 mb-2">CEO: Mike</h3>
+          <p class="text-sm text-gray-600">
+            Leading our breeding program with passion and dedication. 
+            "JUST FOR THE LOVE OF IT" - where legends are made through 
+            strategic US/UK partnerships and quality breeding program.
+          </p>
+        </div>
+        
+        <div class="mt-4 p-4 bg-green-50 rounded-lg">
+          <h3 class="font-semibold text-gray-800 mb-2">Partnership</h3>
+          <p class="text-sm text-gray-600">
+            In collaboration with HorrorBullz HQ for international breeding excellence.
+            Follow us: @maxlinebulldogs & @horrorbullzhq
+          </p>
+        </div>
+      </div>
+      <div>
+        <Contactform />
+      </div>
+    </div>
+  </Container>
+</Layout>

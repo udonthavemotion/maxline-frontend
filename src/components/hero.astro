@@ -1,0 +1,213 @@
+---
+import { Picture } from "astro:assets";
+import heroImage from "@/assets/hero.png";
+import Link from "@/components/ui/link.astro";
+import { Icon } from "astro-icon/components";
+import { getImageUrl, type Homepage } from "@/lib/strapi";
+
+interface Props {
+  homepageContent?: Homepage | null;
+}
+
+const { homepageContent } = Astro.props;
+---
+
+<style>
+  /* Float animation keyframes */
+  @keyframes float {
+    0% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-8px);
+    }
+    100% {
+      transform: translateY(0px);
+    }
+  }
+
+  /* Floating elements */
+  .float-animation {
+    animation: float 4s ease-in-out infinite;
+  }
+
+  .float-animation-delayed {
+    animation: float 4s ease-in-out infinite;
+    animation-delay: 1.5s;
+  }
+
+  /* Hover effects */
+  .hover-lift {
+    transition: all 0.3s ease;
+  }
+
+  .hover-lift:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Video container styling */
+  .video-container {
+    background: linear-gradient(145deg, #ffffff, #f8f9fa);
+    border: 1px solid #e9ecef;
+    border-radius: 1.5rem;
+    padding: 0.75rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07), 0 1px 3px rgba(0, 0, 0, 0.05);
+  }
+
+  /* Content card styling */
+  .content-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(233, 236, 239, 0.8);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  }
+
+  /* Accent decorations */
+  .accent-decoration {
+    background: linear-gradient(45deg, #EA580C, #2563EB);
+    border-radius: 50%;
+    opacity: 0.1;
+  }
+
+  /* Stats card styling */
+  .stats-card {
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid #e9ecef;
+    border-radius: 0.75rem;
+    padding: 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s ease;
+  }
+
+  .stats-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+</style>
+
+<main class="relative overflow-hidden min-h-screen bg-primary">
+  <!-- Background decoration -->
+  <div class="absolute inset-0 overflow-hidden">
+    <div class="absolute top-20 left-10 w-32 h-32 accent-decoration float-animation"></div>
+    <div class="absolute bottom-20 right-10 w-24 h-24 accent-decoration float-animation-delayed"></div>
+  </div>
+  
+  <div class="relative z-10 grid lg:grid-cols-2 gap-12 place-items-center pt-20 pb-12 md:pt-24 md:pb-28 px-6 min-h-screen">
+    <!-- Hero Video - Using CMS content -->
+    <div class="py-6 md:order-2">
+      <div class="relative float-animation">
+        <div class="video-container hover-lift">
+          <div class="w-full h-[450px] md:h-[600px] lg:h-[650px] overflow-hidden rounded-xl relative">
+            <video 
+              class="w-full h-full object-cover rounded-xl"
+              autoplay 
+              muted 
+              loop 
+              playsinline
+              poster={homepageContent?.hero_poster_image ? getImageUrl(homepageContent.hero_poster_image) : "/hero-video-poster/horrorbullzhq_1750528212_3660018381867734658_54079664260.jpg"}
+            >
+              <source src={homepageContent?.hero_video ? getImageUrl(homepageContent.hero_video) : "/hero-video/horrorbullzhq_1745182624_3615176192438272992_54079664260.mp4"} type="video/mp4">
+              <!-- Fallback for unsupported browsers -->
+              <div class="w-full h-full flex items-center justify-center bg-neutral-100">
+                <div class="text-center">
+                  <Icon class="w-12 h-12 text-brand-blue mb-4" name="bx:bxs-dog" />
+                  <p class="text-lg font-semibold text-brand-navy">Max Line Bulldogs</p>
+                  <p class="text-sm text-muted">Your browser doesn't support video</p>
+                </div>
+              </div>
+            </video>
+          </div>
+        </div>
+        
+        <!-- Decorative elements -->
+        <div class="absolute -top-6 -right-6 w-24 h-24 bg-brand-blue/10 rounded-full float-animation-delayed"></div>
+        <div class="absolute -bottom-8 -left-8 w-36 h-36 bg-brand-orange/10 rounded-full float-animation"></div>
+      </div>
+    </div>
+    
+    <!-- Hero Content - Using CMS content -->
+    <div class="text-center lg:text-left float-animation-delayed">
+      <!-- Partnership Badge -->
+      <div class="inline-flex items-center gap-2 content-card mb-6 hover-lift">
+        <div class="w-2 h-2 bg-brand-orange rounded-full"></div>
+        <span class="text-brand-navy font-medium text-sm">Wellington, Florida & UK Operations</span>
+      </div>
+      
+      <!-- Main Headline - Using CMS content -->
+      <h1 class="font-heading text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-brand-navy leading-tight mb-6">
+        <span class="text-brand-navy">
+          {homepageContent?.hero_headline || "Max Line Bulldogs"}
+        </span>
+        <br />
+        <span class="bg-gradient-to-r from-brand-blue to-brand-orange bg-clip-text text-transparent">
+          Where Legends Are Made
+        </span>
+      </h1>
+      
+      <!-- Section divider -->
+      <div class="w-24 h-1 bg-gradient-to-r from-brand-blue to-brand-orange rounded-full mx-auto lg:mx-0 mb-6"></div>
+      
+      <!-- Subheadline - Using CMS content -->
+      <p class="text-lg md:text-xl text-secondary max-w-2xl mb-8 leading-relaxed">
+        {homepageContent?.hero_subheadline || "Pioneering premium English Bulldog breeding through strategic imports, exotic genetics, and cultural influence."}
+        <br />
+        <span class="text-brand-orange font-bold italic mt-2 block">JUST FOR THE LOVE OF IT</span>
+        <br />
+        <span class="text-sm text-muted">In partnership with HorrorBullz HQ</span>
+      </p>
+      
+      <!-- Stats with light theme cards -->
+      <div class="flex flex-wrap gap-6 mb-8 justify-center lg:justify-start">
+        <div class="text-center stats-card">
+          <div class="text-2xl font-bold text-brand-orange">15+</div>
+          <div class="text-sm text-muted">Import Champions</div>
+        </div>
+        <div class="text-center stats-card">
+          <div class="text-2xl font-bold text-brand-orange">FL</div>
+          <div class="text-sm text-muted">Based & Bred</div>
+        </div>
+        <div class="text-center stats-card">
+          <div class="text-2xl font-bold text-brand-orange">100%</div>
+          <div class="text-sm text-muted">Exotic Genetics</div>
+        </div>
+      </div>
+      
+      <!-- CTA Buttons - Enhanced for light theme -->
+      <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+        <Link
+          href="/studs"
+          style="primary"
+          class="cta-primary flex gap-2 items-center justify-center">
+          <Icon class="w-5 h-5" name="bx:bxs-crown" />
+          View Champion Studs
+        </Link>
+        <Link
+          href="/puppies"
+          style="outline"
+          class="cta-secondary flex gap-2 items-center justify-center">
+          <Icon class="w-5 h-5" name="bx:bxs-heart" />
+          See Available Puppies
+        </Link>
+      </div>
+      
+      <!-- Trust indicators -->
+      <div class="mt-8 flex flex-wrap gap-4 items-center justify-center lg:justify-start text-sm text-muted">
+        <div class="flex items-center gap-1">
+          <Icon class="w-4 h-4 text-brand-blue" name="bx:bxs-shield" />
+          <span>Health Guaranteed</span>
+        </div>
+        <div class="flex items-center gap-1">
+          <Icon class="w-4 h-4 text-brand-blue" name="bx:bxs-award" />
+                      <span>AKC Registered</span>
+        </div>
+        <div class="flex items-center gap-1">
+          <Icon class="w-4 h-4 text-brand-blue" name="bx:bxs-truck" />
+          <span>International Shipping</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>

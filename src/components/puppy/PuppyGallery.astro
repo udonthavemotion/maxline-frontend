@@ -1,0 +1,126 @@
+---
+import { getImageUrl, isVideo, type Puppy } from "@/lib/strapi";
+import { Icon } from "astro-icon/components";
+
+interface Props {
+  puppy: Puppy;
+}
+
+const { puppy } = Astro.props;
+const allMedia = puppy.images || [];
+---
+
+{allMedia.length > 1 && (
+  <section id="gallery" class="py-16 bg-secondary">
+    <div class="max-w-7xl mx-auto px-4">
+      <div class="text-center mb-12">
+        <h2 class="text-4xl font-heading font-bold text-brand-navy mb-4">
+          Gallery
+        </h2>
+        <p class="text-lg text-secondary">
+          Photos and videos of {puppy.name}
+        </p>
+      </div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {allMedia.map((media, index) => (
+          <div class="relative group cursor-pointer gallery-item" data-index={index}>
+            <div class="aspect-square overflow-hidden rounded-lg shadow-lg">
+              {isVideo(media) ? (
+                <div class="relative w-full h-full">
+                  <video 
+                    src={getImageUrl(media)}
+                    class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    muted
+                    loop
+                    preload="metadata"
+                  />
+                  
+                  <!-- Video Play Button Overlay -->
+                  <div class="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <div class="w-16 h-16 bg-white bg-opacity-80 rounded-full flex items-center justify-center">
+                      <Icon class="w-8 h-8 text-gray-800 ml-1" name="bx:bx-play" />
+                    </div>
+                  </div>
+                  
+                  <!-- Video Badge -->
+                  <div class="absolute top-3 right-3 bg-black bg-opacity-70 text-white px-2 py-1 rounded text-xs font-medium">
+                    VIDEO
+                  </div>
+                </div>
+              ) : (
+                <img 
+                  src={getImageUrl(media, 'medium')}
+                  alt={media.alternativeText || `${puppy.name} photo ${index + 1}`}
+                  class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  loading="lazy"
+                />
+              )}
+            </div>
+            
+            <!-- Hover Overlay -->
+            <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all duration-300 rounded-lg flex items-center justify-center">
+              <div class="text-white font-semibold opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-center">
+                <Icon class="w-8 h-8 mx-auto mb-2" name="bx:bx-expand" />
+                <span class="text-sm">
+                  {isVideo(media) ? 'Play Video' : 'View Full Size'}
+                </span>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+      
+      <!-- Gallery Navigation Note -->
+      <div class="text-center mt-8 text-gray-600">
+        <p class="text-sm">Click on any image or video to view full size</p>
+      </div>
+    </div>
+  </section>
+)}
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const galleryItems = document.querySelectorAll('.gallery-item');
+    
+    galleryItems.forEach(item => {
+      item.addEventListener('click', function() {
+        const index = this.getAttribute('data-index');
+        const media = this.querySelector('img, video');
+        
+        if (media) {
+          // Create a simple lightbox
+          const lightbox = document.createElement('div');
+          lightbox.className = 'fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 cursor-pointer';
+          
+          const mediaElement = media.cloneNode(true);
+          mediaElement.className = 'max-w-full max-h-full object-contain';
+          
+          // Add controls for video
+          if (mediaElement.tagName === 'VIDEO') {
+            mediaElement.controls = true;
+            mediaElement.autoplay = true;
+          }
+          
+          lightbox.appendChild(mediaElement);
+          
+          // Close on click
+          lightbox.addEventListener('click', function(e) {
+            if (e.target === lightbox) {
+              document.body.removeChild(lightbox);
+            }
+          });
+          
+          // Close on escape key
+          document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+              document.body.removeChild(lightbox);
+            }
+          });
+          
+          document.body.appendChild(lightbox);
+        }
+      });
+    });
+  });
+</script> 

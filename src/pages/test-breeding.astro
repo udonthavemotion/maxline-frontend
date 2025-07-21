@@ -1,0 +1,148 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { getBreedingProgram, getImageUrl, isVideo } from "@/lib/strapi";
+import BreedingVideoSection from "@/components/BreedingVideoSection.astro";
+
+// Test the breeding program with new field structure
+let breedingProgram = null;
+let error = null;
+
+try {
+  const response = await getBreedingProgram();
+  breedingProgram = response.data;
+  console.log('🧪 Testing breeding program with new fields:', {
+    heroMedia: !!breedingProgram?.hero_media,
+    photoGalleryCount: breedingProgram?.photo_gallery?.length || 0,
+  });
+} catch (err) {
+  console.error('❌ Test error:', err);
+  error = err.message;
+}
+
+// Mock data for testing
+const mockData = {
+  title: 'TEST: MAX LINE BULLDOGS',
+  subtext: 'Testing New Field Structure 🧪',
+  description: 'This is a test page to verify the new hero_media and photo_gallery fields work correctly.',
+  partnership_note: 'Test Partnership Note',
+  hero_media: undefined, // Will be populated from Strapi
+  photo_gallery: [], // Will be populated from Strapi  
+  description_long: 'This is a longer description to test the new field structure and ensure everything renders properly.'
+};
+
+const testData = breedingProgram || mockData;
+const heroMedia = testData.hero_media;
+const photoGallery = testData.photo_gallery || [];
+---
+
+<Layout title="Test Breeding Program | Max Line Bulldogs">
+  <main class="bg-white min-h-screen py-20">
+    <div class="max-w-4xl mx-auto px-6">
+      
+      <!-- Test Results Header -->
+      <div class="bg-blue-50 rounded-2xl p-8 mb-12 border border-blue-200">
+        <h1 class="text-3xl font-bold text-blue-900 mb-4">🧪 Breeding Program Field Test</h1>
+        
+        {error ? (
+          <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-4">
+            <strong>Connection Error:</strong> {error}
+            <br />
+            <small>Showing fallback data for testing</small>
+          </div>
+        ) : (
+          <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-4">
+            ✅ Successfully connected to Strapi
+          </div>
+        )}
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
+          <div>
+            <h3 class="font-semibold text-gray-800 mb-2">Field Status:</h3>
+            <ul class="space-y-1 text-gray-600">
+              <li>✅ <code>hero_media</code>: {heroMedia ? '✅ Present' : '❌ Empty'}</li>
+              <li>✅ <code>photo_gallery</code>: {photoGallery.length} items</li>
+              <li>✅ <code>title</code>: {testData.title ? '✅ Present' : '❌ Empty'}</li>
+              <li>✅ <code>description_long</code>: {testData.description_long ? '✅ Present' : '❌ Empty'}</li>
+            </ul>
+          </div>
+          
+          <div>
+            <h3 class="font-semibold text-gray-800 mb-2">Media Analysis:</h3>
+            <ul class="space-y-1 text-gray-600">
+              <li>Hero Media Type: {heroMedia ? (isVideo(heroMedia) ? '🎥 Video' : '🖼️ Image') : 'None'}</li>
+              <li>Gallery Images: {photoGallery.length}</li>
+              <li>Total Media Files: {(heroMedia ? 1 : 0) + photoGallery.length}</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Hero Media Preview -->
+      {heroMedia && (
+        <div class="mb-12">
+          <h2 class="text-2xl font-bold mb-6">Hero Media Preview:</h2>
+          <div class="relative rounded-2xl overflow-hidden shadow-xl max-w-2xl mx-auto">
+            {isVideo(heroMedia) ? (
+              <video controls class="w-full h-auto max-h-96 object-cover">
+                <source src={getImageUrl(heroMedia, 'large')} type={heroMedia.mime} />
+                Your browser does not support video playback.
+              </video>
+            ) : (
+              <img 
+                src={getImageUrl(heroMedia, 'large')} 
+                alt={heroMedia.alternativeText || 'Hero Media'}
+                class="w-full h-auto max-h-96 object-cover"
+              />
+            )}
+          </div>
+        </div>
+      )}
+      
+      <!-- Photo Gallery Preview -->
+      {photoGallery.length > 0 && (
+        <div class="mb-12">
+          <h2 class="text-2xl font-bold mb-6">Photo Gallery Preview ({photoGallery.length} items):</h2>
+          <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {photoGallery.map((photo, index) => (
+              <div class="relative rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow">
+                <img 
+                  src={getImageUrl(photo, 'medium')} 
+                  alt={photo.alternativeText || `Gallery Image ${index + 1}`}
+                  class="w-full h-32 object-cover hover:scale-105 transition-transform duration-300"
+                />
+                <div class="absolute top-2 right-2 bg-black/50 text-white text-xs px-2 py-1 rounded">
+                  {index + 1}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+      
+      <!-- Component Test -->
+      <div class="mb-12">
+        <h2 class="text-2xl font-bold mb-6">BreedingVideoSection Component Test:</h2>
+        <div class="border-2 border-dashed border-gray-300 rounded-2xl p-1">
+          <BreedingVideoSection 
+            heroMedia={heroMedia}
+            photoGallery={photoGallery}
+            descriptionLong={testData.description_long}
+          />
+        </div>
+      </div>
+      
+      <!-- Raw Data Debug -->
+      <div class="bg-gray-50 rounded-2xl p-6">
+        <h3 class="text-xl font-bold text-gray-800 mb-4">Raw Data (Debug):</h3>
+        <pre class="text-xs bg-white p-4 rounded-lg overflow-auto max-h-64 border text-gray-600">
+{JSON.stringify({
+  heroMedia: heroMedia || null,
+  photoGalleryCount: photoGallery.length,
+  hasContent: !!testData.title
+}, null, 2)}
+        </pre>
+      </div>
+      
+    </div>
+  </main>
+</Layout> 

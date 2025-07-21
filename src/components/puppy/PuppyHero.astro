@@ -1,0 +1,142 @@
+---
+import { formatPrice, getImageUrl, isVideo, type Puppy } from "@/lib/strapi";
+import { Icon } from "astro-icon/components";
+
+interface Props {
+  puppy: Puppy;
+}
+
+const { puppy } = Astro.props;
+const heroMedia = puppy.images && puppy.images.length > 0 ? puppy.images[0] : null;
+---
+
+<section class="py-16 bg-gradient-to-br from-brand-blue to-purple-600 text-white">
+  <div class="max-w-7xl mx-auto px-4">
+    <div class="grid lg:grid-cols-2 gap-12 items-center">
+      <!-- Hero Media -->
+      <div class="order-2 lg:order-1">
+        {heroMedia ? (
+          <div class="relative rounded-2xl overflow-hidden shadow-2xl">
+            {isVideo(heroMedia) ? (
+              <video 
+                src={getImageUrl(heroMedia)}
+                class="w-full h-[500px] object-cover"
+                autoplay
+                muted
+                loop
+                playsinline
+              />
+            ) : (
+              <img 
+                src={getImageUrl(heroMedia, 'large')}
+                alt={heroMedia.alternativeText || `${puppy.name} puppy photo`}
+                class="w-full h-[500px] object-cover"
+              />
+            )}
+            
+            <!-- Media Type Badge -->
+            {isVideo(heroMedia) && (
+              <div class="absolute top-4 right-4 bg-black/50 backdrop-blur-sm text-white px-3 py-1 rounded-full text-sm font-medium">
+                VIDEO
+              </div>
+            )}
+          </div>
+        ) : (
+          <div class="relative rounded-2xl overflow-hidden shadow-2xl bg-gray-200">
+            <div class="w-full h-[500px] flex items-center justify-center bg-neutral-300">
+              <div class="text-center text-gray-500">
+                <Icon class="w-16 h-16 mx-auto mb-4" name="bx:bxs-image" />
+                <p class="text-lg font-medium">No Photo Available</p>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+      
+      <!-- Hero Content -->
+      <div class="order-1 lg:order-2 text-center lg:text-left">
+        <div class="inline-flex items-center gap-2 bg-brand-orange px-4 py-2 rounded-full text-sm font-medium mb-4">
+          <Icon class="w-4 h-4" name="bx:bxs-heart" />
+          {puppy.avaliable === 'Available' ? 'Available Now' : puppy.avaliable}
+        </div>
+        
+        <h1 class="text-5xl lg:text-6xl font-heading font-bold mb-6">
+          {puppy.name}
+        </h1>
+        
+        <div class="text-2xl font-bold text-brand-orange mb-6">
+          Price: {formatPrice(puppy.price)}
+        </div>
+        
+        <div class="flex items-center gap-6 mb-8 justify-center lg:justify-start">
+          {puppy.gender && (
+            <div class="flex items-center gap-2">
+              <Icon class="w-5 h-5 text-brand-orange" name="bx:bxs-user" />
+              <span>{puppy.gender}</span>
+            </div>
+          )}
+          
+          {puppy.age && (
+            <div class="flex items-center gap-2">
+              <Icon class="w-5 h-5 text-brand-orange" name="bx:bxs-calendar" />
+              <span>{puppy.age}</span>
+            </div>
+          )}
+          
+          <div class="flex items-center gap-2">
+            <Icon class="w-5 h-5 text-brand-orange" name="bx:bxs-check-circle" />
+            <span class="capitalize">{puppy.avaliable}</span>
+          </div>
+        </div>
+        
+        {puppy.description && (
+          <div class="text-lg text-neutral-200 mb-8 leading-relaxed">
+            {Array.isArray(puppy.description) ? (
+              puppy.description.map((block, index) => (
+                block.type === 'paragraph' && (
+                  <p class="mb-4">
+                    {block.children.map((child, childIndex) => (
+                      <span>{child.text}</span>
+                    ))}
+                  </p>
+                )
+              ))
+            ) : (
+              <p>{puppy.description}</p>
+            )}
+          </div>
+        )}
+        
+        <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+          {puppy.avaliable === 'Available' ? (
+            <a 
+              href="#contact" 
+              class="bg-brand-orange hover:bg-orange-600 text-white px-8 py-3 rounded-lg font-medium transition-colors inline-flex items-center gap-2"
+            >
+              <Icon class="w-5 h-5" name="bx:bxs-heart" />
+              Adopt {puppy.name}
+            </a>
+          ) : (
+            <a 
+              href="#contact" 
+              class="bg-gray-500 hover:bg-gray-600 text-white px-8 py-3 rounded-lg font-medium transition-colors inline-flex items-center gap-2"
+            >
+              <Icon class="w-5 h-5" name="bx:bxs-info-circle" />
+              Contact About {puppy.name}
+            </a>
+          )}
+          
+          {puppy.images && puppy.images.length > 1 && (
+            <a 
+              href="#gallery" 
+              class="bg-white/20 hover:bg-white/30 text-white px-8 py-3 rounded-lg font-medium transition-colors inline-flex items-center gap-2"
+            >
+              <Icon class="w-5 h-5" name="bx:bxs-image" />
+              View Gallery
+            </a>
+          )}
+        </div>
+      </div>
+    </div>
+  </div>
+</section> 

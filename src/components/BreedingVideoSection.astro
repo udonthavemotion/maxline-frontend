@@ -1,0 +1,111 @@
+---
+import { getImageUrl, isVideo } from "@/lib/strapi";
+
+export interface Props {
+  photoGallery?: any[];
+  heroMedia?: any;
+  descriptionLong?: string;
+}
+
+const { photoGallery, heroMedia, descriptionLong } = Astro.props;
+
+const hasPhotoContent = photoGallery && photoGallery.length > 0;
+const hasHeroMedia = heroMedia !== undefined;
+const primaryMedia = hasHeroMedia ? heroMedia : (hasPhotoContent ? photoGallery[0] : null);
+const isVideoFile = primaryMedia ? isVideo(primaryMedia) : false;
+---
+
+{(hasPhotoContent || hasHeroMedia || descriptionLong) && (
+  <section class="py-20 px-6 md:px-12 bg-white">
+    <div class="max-w-3xl mx-auto text-center">
+      
+      <!-- Media Content -->
+      {(hasPhotoContent || hasHeroMedia) && (
+        <div class="mb-12">
+          <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-8">
+            Behind the Scenes 🎥
+          </h2>
+          
+          <div class="relative rounded-2xl overflow-hidden shadow-2xl mb-8">
+            {isVideoFile ? (
+              <video 
+                controls 
+                poster={hasPhotoContent && photoGallery.length > 1 ? getImageUrl(photoGallery[1], 'large') : undefined}
+                class="w-full h-auto max-h-[500px] object-cover"
+              >
+                <source src={getImageUrl(primaryMedia!, 'large')} type={primaryMedia!.mime}>
+                Your browser does not support video playback.
+              </video>
+            ) : (
+              <img 
+                src={getImageUrl(primaryMedia!, 'large')} 
+                alt={primaryMedia!.alternativeText || 'Breeding Program Image'}
+                class="w-full h-auto max-h-[500px] object-cover"
+              />
+            )}
+            
+            {/* Play button overlay for non-video images */}
+            {!isVideoFile && (
+              <div class="absolute inset-0 flex items-center justify-center bg-black/20 hover:bg-black/10 transition-colors">
+                <div class="w-20 h-20 bg-white/90 rounded-full flex items-center justify-center hover:scale-110 transition-transform">
+                  <svg class="w-10 h-10 text-gray-800 ml-1" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/>
+                  </svg>
+                </div>
+              </div>
+            )}
+          </div>
+          
+          <!-- Additional Gallery Items (if multiple) -->
+          {hasPhotoContent && photoGallery.length > 1 && (
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+              {photoGallery.slice(hasHeroMedia ? 0 : 1).map((photo, index) => (
+                <div class="relative rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow">
+                  {isVideo(photo) ? (
+                    <video 
+                      class="w-full h-32 object-cover"
+                      muted
+                      loop
+                      onmouseenter="this.play()"
+                      onmouseleave="this.pause()"
+                    >
+                      <source src={getImageUrl(photo, 'medium')} type={photo.mime}>
+                    </video>
+                  ) : (
+                    <img 
+                      src={getImageUrl(photo, 'medium')} 
+                      alt={photo.alternativeText || `Gallery Image ${index + 1}`}
+                      class="w-full h-32 object-cover hover:scale-105 transition-transform duration-300"
+                    />
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+      
+      <!-- Long Description -->
+      {descriptionLong && (
+        <div class="prose prose-lg prose-gray max-w-none">
+          <div class="text-xl leading-relaxed text-gray-700 whitespace-pre-line">
+            {descriptionLong}
+          </div>
+        </div>
+      )}
+      
+      <!-- Fallback Content -->
+      {!hasPhotoContent && !hasHeroMedia && !descriptionLong && (
+        <div class="py-16">
+          <div class="text-6xl mb-6">🎬</div>
+          <h3 class="text-2xl font-bold text-gray-800 mb-4">Media Section Ready</h3>
+          <p class="text-gray-600 max-w-2xl mx-auto">
+            Upload media to the "hero_media" field or add photos to "photo_gallery" 
+            and add content to "description_long" in your Strapi admin panel to showcase your breeding program in action.
+          </p>
+        </div>
+      )}
+      
+    </div>
+  </section>
+)} 

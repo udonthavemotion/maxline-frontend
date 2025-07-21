@@ -1,0 +1,36 @@
+---
+import Container from "@/components/container.astro";
+import Cta from "@/components/cta.astro";
+import Features from "@/components/features.astro";
+import Hero from "@/components/hero.astro";
+import ImageShowcase from "@/components/imageShowcase.astro";
+import Logos from "@/components/logos.astro";
+import Layout from "@/layouts/Layout.astro";
+import { getHomepageContent, type Homepage } from "@/lib/strapi";
+
+// Fetch homepage content
+let homepageContent: Homepage | null = null;
+let error: string | null = null;
+
+try {
+  // Get homepage content
+  const homepageResponse = await getHomepageContent();
+  homepageContent = homepageResponse.data;
+} catch (err) {
+  console.error('Error fetching homepage content:', err);
+  console.error('This is likely a permissions issue. Please check Strapi permissions for the homepage content type.');
+  error = 'Some content may not be available';
+  // Set default homepage content to prevent crashes
+  homepageContent = null; // Let the Hero component handle the fallback
+}
+---
+
+<Layout title="">
+  <Container>
+    <Hero homepageContent={homepageContent} />
+    <Features />
+    <ImageShowcase />
+    <Logos />
+    <Cta />
+  </Container>
+</Layout>

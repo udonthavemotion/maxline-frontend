@@ -1,0 +1,131 @@
+---
+import { Icon } from "astro-icon/components";
+import { getGalleryItems, getImageUrl, type GalleryItem } from "../lib/strapi";
+
+let galleryItems: GalleryItem[] = [];
+let error: string | null = null;
+
+// Fallback data in case API fails
+const fallbackImages = [
+  {
+    src: "https://placehold.co/400x300?text=Champion+Stud+1",
+    alt: "Champion English Bulldog Stud 1",
+    title: "Champion Bloodlines",
+    description: "Our carefully selected champion studs represent the finest English Bulldog genetics."
+  },
+  {
+    src: "https://placehold.co/400x300?text=Happy+Puppy+1",
+    alt: "Happy English Bulldog Puppy 1",
+    title: "Healthy Puppies",
+    description: "Each puppy is raised with love and receives comprehensive health care from birth."
+  },
+  {
+    src: "https://placehold.co/400x300?text=Breeding+Pair",
+    alt: "English Bulldog Breeding Pair",
+    title: "Expert Breeding",
+    description: "Strategic pairings ensure optimal health, temperament, and conformation in every litter."
+  },
+  {
+    src: "https://placehold.co/400x300?text=Family+Photo",
+    alt: "English Bulldog Family Photo",
+    title: "Family Raised",
+    description: "Our bulldogs are part of our family, ensuring excellent socialization and temperament."
+  },
+  {
+    src: "https://placehold.co/400x300?text=Show+Winner",
+    alt: "English Bulldog Show Winner",
+    title: "Show Quality",
+    description: "Many of our bulldogs have achieved championship status in prestigious dog shows."
+  },
+  {
+    src: "https://placehold.co/400x300?text=Puppy+Playdate",
+    alt: "English Bulldog Puppy Playdate",
+    title: "Socialization",
+    description: "Early socialization ensures our puppies grow into well-adjusted family companions."
+  }
+];
+
+try {
+  const response = await getGalleryItems({
+    populate: 'image',
+    sort: 'order:asc',
+    pageSize: 6
+  });
+  galleryItems = response.data;
+} catch (err) {
+  console.error('Error fetching gallery items:', err);
+  error = 'Failed to load gallery items';
+}
+
+// Use fallback if no items loaded from API
+const imagesToDisplay = galleryItems.length > 0 ? galleryItems : fallbackImages;
+---
+
+<section class="py-16 bg-secondary">
+  <div class="max-w-7xl mx-auto px-4">
+    <div class="text-center mb-16">
+      <h2 class="font-heading text-4xl lg:text-5xl font-bold text-brand-navy mb-4">
+        Life at 
+        <span class="text-brand-blue">Max Line Bulldogs</span>
+      </h2>
+      
+      <!-- Section divider -->
+      <div class="w-24 h-1 bg-gradient-to-r from-brand-blue to-brand-orange rounded-full mx-auto mb-6"></div>
+      
+      <p class="text-lg text-secondary max-w-3xl mx-auto leading-relaxed">
+        Step into our world where champion English Bulldogs live, play, and thrive. 
+        Each photo tells a story of dedication, love, and the pursuit of breeding excellence.
+      </p>
+    </div>
+    
+    <!-- Image Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      {imagesToDisplay.map((item, index) => (
+        <div class="card hover:shadow-strong group">
+          <div class="relative overflow-hidden rounded-lg mb-4">
+            <img 
+              src={galleryItems.length > 0 && item.image ? getImageUrl(item.image, 'medium') : item.src}
+              alt={galleryItems.length > 0 ? item.alt_text : item.alt}
+              loading="lazy"
+              class="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-105"
+            />
+            <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          </div>
+          
+          <div class="space-y-2">
+            <h3 class="font-heading font-semibold text-xl text-brand-navy">
+              {item.title}
+            </h3>
+            <p class="text-secondary leading-relaxed text-sm">
+              {item.description}
+            </p>
+          </div>
+        </div>
+      ))}
+    </div>
+    
+    <!-- CTA Section -->
+    <div class="mt-16 text-center">
+      <div class="bg-gradient-to-r from-brand-blue/5 to-brand-orange/5 rounded-2xl p-8 border border-neutral-200">
+        <h3 class="font-heading text-2xl font-bold text-brand-navy mb-4">
+          Ready to Meet Your Perfect Companion?
+        </h3>
+        <p class="text-secondary mb-6 max-w-2xl mx-auto">
+          Each of our bulldogs is raised with love, care, and attention to detail. 
+          Contact us to learn more about available puppies and champion studs.
+        </p>
+        
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+          <a href="/contact" class="cta-primary">
+            <Icon class="w-5 h-5 mr-2" name="bx:bxs-envelope" />
+            Contact Us Today
+          </a>
+          <a href="/puppies" class="cta-secondary">
+            <Icon class="w-5 h-5 mr-2" name="bx:bxs-heart" />
+            View Available Puppies
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section> 
