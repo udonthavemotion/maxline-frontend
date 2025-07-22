@@ -1,12 +1,18 @@
 ---
-const { align = "center" } = Astro.props;
+const { align = "center", accent = true } = Astro.props;
 ---
 
-<div class:list={["mt-16", align === "center" && "text-center"]}>
-  <h1 class="text-4xl lg:text-5xl font-bold lg:tracking-tight">
+<div class:list={["mt-16 mb-12", align === "center" && "text-center"]}>
+  <h1 class="font-playfair text-4xl lg:text-6xl font-bold lg:tracking-tight text-gray-800 mb-3 leading-tight">
     <slot name="title">Title</slot>
   </h1>
-  <p class="text-lg mt-4 text-slate-600">
+  
+  {accent && (
+    <!-- Accent divider line -->
+    <div class="h-1 w-12 bg-orange-500 rounded mx-auto mb-6"></div>
+  )}
+  
+  <p class="text-lg lg:text-xl mt-4 text-gray-700 max-w-3xl mx-auto leading-relaxed tracking-wide">
     <slot name="desc">Some description goes here</slot>
   </p>
 </div>

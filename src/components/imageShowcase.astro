@@ -1,6 +1,13 @@
 ---
 import { Icon } from "astro-icon/components";
 import { getGalleryItems, getImageUrl, type GalleryItem } from "../lib/strapi";
+import type { Homepage } from "@/lib/strapi";
+
+interface Props {
+  homepageContent?: Homepage | null;
+}
+
+const { homepageContent } = Astro.props;
 
 let galleryItems: GalleryItem[] = [];
 let error: string | null = null;
@@ -65,16 +72,14 @@ const imagesToDisplay = galleryItems.length > 0 ? galleryItems : fallbackImages;
   <div class="max-w-7xl mx-auto px-4">
     <div class="text-center mb-16">
       <h2 class="font-heading text-4xl lg:text-5xl font-bold text-brand-navy mb-4">
-        Life at 
-        <span class="text-brand-blue">Max Line Bulldogs</span>
+        {homepageContent?.featured_section_title || "Life at Max Line Bulldogs"}
       </h2>
       
       <!-- Section divider -->
       <div class="w-24 h-1 bg-gradient-to-r from-brand-blue to-brand-orange rounded-full mx-auto mb-6"></div>
       
       <p class="text-lg text-secondary max-w-3xl mx-auto leading-relaxed">
-        Step into our world where champion English Bulldogs live, play, and thrive. 
-        Each photo tells a story of dedication, love, and the pursuit of breeding excellence.
+        {homepageContent?.featured_section_description || "Step into our world where champion English Bulldogs live, play, and thrive. Each photo tells a story of dedication, love, and the pursuit of breeding excellence."}
       </p>
     </div>
     
@@ -122,7 +127,7 @@ const imagesToDisplay = galleryItems.length > 0 ? galleryItems : fallbackImages;
           </a>
           <a href="/puppies" class="cta-secondary">
             <Icon class="w-5 h-5 mr-2" name="bx:bxs-heart" />
-            View Available Puppies
+            See Available Puppies
           </a>
         </div>
       </div>

@@ -1,89 +1,353 @@
 ---
 import Layout from "@/layouts/Layout.astro";
 import Container from "@/components/container.astro";
-import { getPuppies, getPuppy, formatPrice, getImageUrl, type Puppy } from "@/lib/strapi";
-import PuppyHero from "@/components/puppy/PuppyHero.astro";
-import PuppyGallery from "@/components/puppy/PuppyGallery.astro";
-import PuppyInfo from "@/components/puppy/PuppyInfo.astro";
-import PuppyContact from "@/components/puppy/PuppyContact.astro";
+import { getPuppy, formatPrice, getImageUrl, formatRichText, type Puppy } from "@/lib/strapi";
 
-// Enable server-side rendering for dynamic puppy pages
-export const prerender = false;
-
-export async function getStaticPaths() {
-  try {
-    const response = await getPuppies({
-      populate: 'images',
-      pageSize: 100
-    });
-    
-    return response.data.map((puppy: Puppy) => ({
-      params: { id: puppy.id.toString() },
-      props: { puppy }
-    }));
-  } catch (error) {
-    console.error('Error generating puppy paths:', error);
-    return [];
-  }
-}
-
-interface Props {
-  puppy: Puppy;
-}
-
-const { puppy } = Astro.props;
+// SSR-enabled dynamic route - fetches data on each request for live updates
 const { id } = Astro.params;
 
-// Fallback if puppy not found in static generation
-let puppyData = puppy;
-if (!puppyData && id) {
-  try {
-    const puppyId = parseInt(id);
-    if (!isNaN(puppyId)) {
-      const response = await getPuppy(puppyId, {
-        populate: 'images'
-      });
-      puppyData = response.data;
-    }
-  } catch (error) {
-    console.error('Error fetching puppy:', error);
-    return Astro.redirect('/puppies');
+let puppy: Puppy | null = null;
+let error: string | null = null;
+
+try {
+  if (id) {
+    console.log('🐶 Fetching puppy data for ID:', id);
+    const response = await getPuppy(id, '*');
+    puppy = response.data;
+    console.log('🐶 Puppy data received:', puppy ? 'Success' : 'No data');
+  }
+} catch (err) {
+  console.error('🚨 SSR fetch error:', err);
+  error = 'Failed to load puppy data';
+  
+  // Log detailed error for debugging
+  if (err instanceof Error) {
+    console.error('Error details:', {
+      message: err.message,
+      stack: err.stack,
+      endpoint: id ? `/api/puppies/${id}?populate=*` : 'No ID provided'
+    });
   }
 }
 
-// If still no puppy, redirect to puppies page
-if (!puppyData) {
+// Fallback if puppy not found
+if (!puppy && !error) {
+  console.warn('⚠️ Puppy not found, redirecting to puppies list');
   return Astro.redirect('/puppies');
 }
 
-// SEO data
-const pageTitle = `${puppyData.name} - English Bulldog Puppy | Max Line Bulldogs`;
-const pageDescription = `Meet ${puppyData.name}, our adorable English Bulldog puppy. ${puppyData.gender}, ${puppyData.age}. Price: ${formatPrice(puppyData.price || 0)}. Available for adoption.`;
+// If there's an error but we're in development, show error page instead of redirect
+if (error && import.meta.env.DEV) {
+  console.log('🔧 Development mode: showing error instead of redirecting');
+} else if (error) {
+  return Astro.redirect('/puppies');
+}
+
+// Robust image handling for all possible Strapi v5 structures
+const heroImage = (() => {
+  if (!puppy?.images || !Array.isArray(puppy.images) || puppy.images.length === 0) {
+    return null;
+  }
+  
+  // Get the first image from the array
+  const firstImage = puppy.images[0];
+  
+  // Check if the image has the required url property
+  if (firstImage && firstImage.url) {
+    return firstImage;
+  }
+  
+  return null;
+})();
+
+// Gallery images from page_gallery field or fallback to images
+const galleryImages = puppy?.page_gallery?.length ? puppy.page_gallery : (puppy?.images || []);
+const backgroundColor = '#f8fafc'; // Default background color for puppies
+
+// SEO and meta data
+const pageTitle = puppy ? `${puppy.name} - English Bulldog Puppy | Max Line Bulldogs` : 'Puppy Not Found';
+const pageDescription = puppy 
+  ? `Meet ${puppy.name}, our adorable English Bulldog puppy. ${puppy.gender || 'Adorable puppy'}, ${puppy.age || 'young age'}. Price: ${formatPrice(puppy.price || 0)}. Available for adoption.`
+  : 'Puppy information not available.';
 ---
 
-<Layout 
-  title={pageTitle}
->
-  <Container>
-    <!-- Breadcrumb Navigation -->
-    <nav class="flex items-center gap-2 text-sm text-gray-600 mb-8 pt-8">
-      <a href="/" class="hover:text-brand-blue transition-colors">Home</a>
-      <span>/</span>
-      <a href="/puppies" class="hover:text-brand-blue transition-colors">Available Puppies</a>
-      <span>/</span>
-      <span class="text-brand-navy font-medium">{puppyData.name}</span>
-    </nav>
+<Layout title={pageTitle}>
+  <main class="min-h-screen" style={`background-color: ${backgroundColor};`}>
+    {error || !puppy ? (
+      <!-- Error State -->
+      <section class="py-20 bg-gradient-to-br from-red-50 to-red-100">
+        <Container>
+          <div class="text-center max-w-2xl mx-auto">
+            <div class="w-20 h-20 mx-auto mb-6 bg-red-100 rounded-full flex items-center justify-center">
+              <svg class="w-10 h-10 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+            </div>
+            <h1 class="text-4xl font-bold text-gray-900 mb-4">Puppy Not Available</h1>
+            <p class="text-lg text-gray-600 mb-8">
+              {import.meta.env.DEV 
+                ? `Development Error: ${error || 'Puppy data not found'}` 
+                : 'Sorry, this puppy information is currently unavailable. Please check back later or contact us directly.'
+              }
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+              <a 
+                href="/puppies"
+                class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors inline-flex items-center gap-2"
+              >
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                </svg>
+                Back to All Puppies
+              </a>
+              <a 
+                href="/contact"
+                class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg font-medium transition-colors inline-flex items-center gap-2"
+              >
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
+                </svg>
+                Contact Us
+              </a>
+            </div>
+          </div>
+        </Container>
+      </section>
+    ) : (
+      <!-- Success State -->
+      <>
+        <!-- Enhanced Hero Section -->
+        <section class="hero relative rounded-3xl overflow-hidden h-80 md:h-96 shadow-2xl mx-4 mt-8">
+          <!-- Hero Media -->
+          {heroImage ? (
+            <img 
+              src={getImageUrl(heroImage, 'large')}
+              alt={heroImage.alternativeText || `${puppy.name || 'Puppy'} photo`}
+              class="absolute inset-0 w-full h-full object-cover rounded-3xl"
+              style="filter: brightness(0.8);"
+            />
+          ) : (
+            <!-- No hero image - show gradient with message -->
+            <div class="absolute inset-0 bg-gradient-to-br from-orange-500 via-pink-500 to-purple-600 rounded-3xl">
+              <div class="absolute inset-0 flex items-center justify-center bg-black/20">
+                <div class="text-center text-white/80">
+                  <svg class="w-12 h-12 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                  </svg>
+                  <p class="text-sm font-medium">Photo Coming Soon</p>
+                </div>
+              </div>
+            </div>
+          )}
+          
+          <!-- Enhanced Hero Overlay -->
+          <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-black/40 rounded-3xl"></div>
+          
+          <!-- Hero Content with Better Typography -->
+          <div class="absolute inset-0 flex flex-col justify-center items-center text-center text-white z-10 p-6">
+            <h1 class="text-4xl md:text-6xl font-bold mb-6 text-shadow-lg leading-tight">
+              {puppy.name || 'Adorable Puppy'}
+            </h1>
+            <div class="flex flex-col sm:flex-row gap-4 items-center">
+              <span class={`px-6 py-3 rounded-full text-sm font-bold shadow-lg backdrop-blur-sm ${
+                puppy.avaliable === 'Available' 
+                  ? 'bg-green-500/90 text-white' 
+                  : puppy.avaliable === 'Reserved'
+                  ? 'bg-yellow-500/90 text-white'
+                  : 'bg-red-500/90 text-white'
+              }`}>
+                {puppy.avaliable || 'Unknown Status'}
+              </span>
+              <span class="text-2xl md:text-3xl font-bold bg-orange-500/90 backdrop-blur-sm px-6 py-3 rounded-full shadow-lg">
+                {formatPrice(puppy.price || 0)}
+              </span>
+            </div>
+          </div>
+          
+          <!-- Enhanced Back Button -->
+          <a 
+            href="/puppies" 
+            class="absolute top-6 left-6 bg-white/10 backdrop-blur-md text-white px-4 py-2 rounded-full hover:bg-white/20 transition-all duration-300 flex items-center gap-2 z-20 shadow-lg"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+            </svg>
+            Back to Puppies
+          </a>
+        </section>
 
-    <!-- Hero Section -->
-    <PuppyHero puppy={puppyData} />
-    
-    <!-- Media Gallery -->
-    <PuppyGallery puppy={puppyData} />
-    
-    <!-- Information Sections -->
-    <PuppyInfo puppy={puppyData} />
-    
-    <!-- Contact Section -->
-    <PuppyContact puppy={puppyData} />
-  </Container>
-</Layout> 
+        <Container>
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 mt-12">
+            <!-- Enhanced Gallery Section -->
+            <section class="space-y-6">
+              <h2 class="text-3xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                <svg class="w-6 h-6 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                </svg>
+                Gallery
+              </h2>
+              {galleryImages.length > 0 ? (
+                <div class="grid grid-cols-2 gap-4">
+                  {galleryImages.map((image, index) => (
+                    <div class="group relative overflow-hidden rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer">
+                      <img 
+                        src={getImageUrl(image, 'medium')} 
+                        alt={image.alternativeText || `${puppy.name || 'Puppy'} image ${index + 1}`}
+                        class="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500"
+                        loading="lazy"
+                      />
+                      <!-- Image Overlay -->
+                      <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
+                      <!-- Image Number -->
+                      <div class="absolute top-2 right-2 bg-white/80 backdrop-blur-sm text-gray-900 text-xs font-bold px-2 py-1 rounded-full">
+                        {index + 1}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div class="text-center py-12 text-gray-500">
+                  <svg class="w-16 h-16 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                  </svg>
+                  <p class="text-lg font-medium">No gallery images available</p>
+                  <p class="text-sm text-gray-400 mt-2">Gallery images can be added through the admin panel</p>
+                </div>
+              )}
+            </section>
+
+            <!-- Enhanced Info Section -->
+            <section class="space-y-8">
+              <h2 class="text-3xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                <svg class="w-6 h-6 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                About {puppy.name || 'This Puppy'}
+              </h2>
+              
+              <!-- Enhanced Basic Info -->
+              <div class="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-gray-100">
+                <h3 class="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                  <svg class="w-5 h-5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                  </svg>
+                  Basic Information
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                  {puppy.age && (
+                    <div class="flex items-center gap-2">
+                      <span class="text-gray-600">Age:</span>
+                      <span class="font-medium text-gray-900">{puppy.age}</span>
+                    </div>
+                  )}
+                  <div class="flex items-center gap-2">
+                    <span class="text-gray-600">Price:</span>
+                    <span class="font-bold text-orange-500 text-lg">{formatPrice(puppy.price || 0)}</span>
+                  </div>
+                  {puppy.gender && (
+                    <div class="flex items-center gap-2">
+                      <span class="text-gray-600">Gender:</span>
+                      <span class="font-medium text-gray-900">{puppy.gender}</span>
+                    </div>
+                  )}
+                  <div class="flex items-center gap-2 md:col-span-2">
+                    <span class="text-gray-600">Status:</span>
+                    <span class={`px-3 py-1 rounded-full text-xs font-bold ${
+                      puppy.avaliable === 'Available' 
+                        ? 'bg-green-100 text-green-800' 
+                        : puppy.avaliable === 'Reserved'
+                        ? 'bg-yellow-100 text-yellow-800'
+                        : 'bg-red-100 text-red-800'
+                    }`}>
+                      {puppy.avaliable || 'Unknown'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Enhanced Description Section -->
+              {puppy.description && (
+                <div class="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-gray-100">
+                  <h3 class="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    Description
+                  </h3>
+                  <div class="text-gray-700 leading-relaxed">
+                    {typeof puppy.description === 'string' 
+                      ? puppy.description 
+                      : <Fragment set:html={formatRichText(puppy.description)} />
+                    }
+                  </div>
+                </div>
+              )}
+
+              <!-- Enhanced Health Records Section -->
+              {puppy.healthrecords && (
+                <div class="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-gray-100">
+                  <h3 class="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path>
+                    </svg>
+                    Health Records
+                  </h3>
+                  <div class="text-gray-700 leading-relaxed">
+                    {typeof puppy.healthrecords === 'string' 
+                      ? puppy.healthrecords 
+                      : <Fragment set:html={formatRichText(puppy.healthrecords)} />
+                    }
+                  </div>
+                </div>
+              )}
+
+              <!-- Enhanced Contact Section -->
+              <div class="bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600 rounded-2xl p-6 text-white shadow-lg">
+                <h3 class="text-xl font-bold mb-4 flex items-center gap-2">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
+                  </svg>
+                  Interested in {puppy.name || 'This Puppy'}?
+                </h3>
+                <p class="mb-4 text-orange-100 leading-relaxed">
+                  {puppy.avaliable === 'Available' 
+                    ? 'This adorable puppy is ready for a loving home! Contact us to learn more about adoption and schedule a visit.'
+                    : 'This puppy may not be available, but we have other beautiful puppies looking for homes. Contact us to see our current available puppies.'
+                  }
+                </p>
+                <a 
+                  href={`/contact?puppy=${encodeURIComponent(puppy.name || 'Puppy')}`}
+                  class="inline-flex items-center gap-2 bg-white/90 backdrop-blur-sm text-orange-600 px-6 py-3 rounded-full font-bold hover:bg-white hover:scale-105 transition-all duration-300 shadow-lg"
+                >
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
+                  </svg>
+                  Contact About {puppy.name || 'This Puppy'}
+                </a>
+              </div>
+            </section>
+          </div>
+        </Container>
+      </>
+    )}
+  </main>
+</Layout>
+
+<style>
+  .text-shadow-lg {
+    text-shadow: 0 4px 12px rgba(0, 0, 0, 0.8);
+  }
+  
+  .hero {
+    transition: all 0.3s ease;
+  }
+  
+  .hero:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  }
+  
+  .group:hover .group-hover\:scale-110 {
+    transform: scale(1.1);
+  }
+</style> 

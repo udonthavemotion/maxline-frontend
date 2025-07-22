@@ -143,7 +143,7 @@ try {
                     <div class="relative w-full h-64 overflow-hidden">
                       <video 
                         src={getImageUrl(thumbnail)}
-                        class="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                        class="w-full max-h-[300px] object-contain rounded-t-2xl shadow-lg transition-transform duration-300 hover:scale-105"
                         autoplay
                         muted
                         loop
@@ -154,7 +154,7 @@ try {
                       </video>
                       <!-- Video indicator -->
                       <div class="absolute top-2 right-2 bg-black/50 backdrop-blur-sm text-white px-2 py-1 rounded text-xs font-medium">
-                        VIDEO
+                        🎥 VIDEO
                       </div>
                       <!-- Subtle play indicator overlay -->
                       <div class="absolute inset-0 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-300 bg-black/20">
@@ -211,12 +211,12 @@ try {
                     <span class="text-sm">{studAge}</span>
                   </div>
                 </div>
-                <p class="text-gray-600 text-sm mb-3">
+                <div class="text-gray-600 text-sm mb-3">
                   {typeof studDescription === 'string' 
                     ? studDescription 
-                    : formatRichText(studDescription)
+                    : <Fragment set:html={formatRichText(studDescription)} />
                   }
-                </p>
+                </div>
                 {studBloodlines && studBloodlines.trim() && (
                   <div class="mb-3">
                     <h4 class="text-xs font-semibold text-gray-700 mb-1">BLOODLINES:</h4>

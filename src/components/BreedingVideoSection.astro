@@ -31,7 +31,7 @@ const isVideoFile = primaryMedia ? isVideo(primaryMedia) : false;
               <video 
                 controls 
                 poster={hasPhotoContent && photoGallery.length > 1 ? getImageUrl(photoGallery[1], 'large') : undefined}
-                class="w-full h-auto max-h-[500px] object-cover"
+                class="w-full h-auto max-h-[700px] object-contain rounded-2xl shadow-xl"
               >
                 <source src={getImageUrl(primaryMedia!, 'large')} type={primaryMedia!.mime}>
                 Your browser does not support video playback.
@@ -40,7 +40,7 @@ const isVideoFile = primaryMedia ? isVideo(primaryMedia) : false;
               <img 
                 src={getImageUrl(primaryMedia!, 'large')} 
                 alt={primaryMedia!.alternativeText || 'Breeding Program Image'}
-                class="w-full h-auto max-h-[500px] object-cover"
+                class="w-full h-auto max-h-[700px] object-contain rounded-2xl shadow-xl"
               />
             )}
             

@@ -1,81 +1,194 @@
 ---
 import Layout from "@/layouts/Layout.astro";
 import Container from "@/components/container.astro";
-import Sectionhead from "@/components/sectionhead.astro";
-import PricingCard from "@/components/pricing.astro";
+import { Icon } from "astro-icon/components";
 
-const pricing = [
+const services = [
   {
-    name: "Personal",
-    price: "Free",
-    popular: false,
-    features: [
-      "Lifetime free",
-      "Up to 3 users",
-      "Unlimited Pages",
-      "Astro Sub domain",
-      "Basic Integrations",
-      "Community Support",
-    ],
-    button: {
-      text: "Get Started",
-      link: "/",
-    },
-  },
-  {
-    name: "Startup",
-    price: {
-      monthly: "$19",
-      annual: "$16",
-      discount: "10%",
-      original: "$24",
-    },
+    name: "Puppy Investment",
+    price: "$3,500 - $8,500",
     popular: true,
+    icon: "🐶",
+    description: "Premium English Bulldog puppies from champion bloodlines",
     features: [
-      "All Free Features",
-      "Up to 20 users",
-      "20 Custom domains",
-      "Unlimited Collaborators",
-      "Advanced Integrations",
-      "Priority Support",
+      "Champion bloodline genetics",
+      "Complete health clearances",
+      "Early socialization program",
+      "Health guarantee included",
+      "Lifetime breeder support",
+      "Microchip & vaccinations",
+      "Puppy starter package",
     ],
     button: {
-      text: "Get Started",
-      link: "#",
+      text: "View Available Puppies",
+      link: "/puppies",
     },
   },
   {
-    name: "Enterprise",
-    price: "Custom",
+    name: "Stud Services",
+    price: "$2,500 - $5,000",
     popular: false,
+    icon: "👑",
+    description: "Professional breeding services with proven champion studs",
     features: [
-      "All Pro Features",
-      "Unlimited Custom domains",
-      "99.99% Uptime SLA",
-      "SAML & SSO Integration",
-      "Dedicated Account Manager",
-      "24/7 Phone Support",
+      "Proven champion bloodlines",
+      "Complete health testing",
+      "Professional AI services",
+      "Breeding consultation",
+      "Pregnancy support",
+      "Detailed breeding contracts",
+      "Follow-up guidance",
     ],
     button: {
-      text: "Contact us",
+      text: "Meet Our Studs",
+      link: "/studs",
+    },
+  },
+  {
+    name: "Breeding Consultation",
+    price: "Contact for Quote",
+    popular: false,
+    icon: "🧬",
+    description: "Expert guidance for your breeding program",
+    features: [
+      "Bloodline analysis",
+      "Breeding strategy planning",
+      "Health testing guidance",
+      "Genetic counseling",
+      "Stud selection advice",
+      "Whelping support",
+      "Ongoing mentorship",
+    ],
+    button: {
+      text: "Schedule Consultation",
       link: "/contact",
     },
   },
 ];
 ---
 
-<Layout title="Pricing">
-  <Container>
-    <Sectionhead>
-      <Fragment slot="title">Pricing</Fragment>
-      <Fragment slot="desc">
-        Simple & Predictable pricing. No Surprises.
-      </Fragment>
-    </Sectionhead>
+<Layout title="Services & Investment">
+  <!-- Enhanced Services Page with Modern Design -->
+  <section class="py-16 px-4 md:px-8 bg-gradient-to-b from-white via-gray-50 to-white relative overflow-hidden">
+    <!-- Background decorative elements -->
+    <div class="absolute top-0 left-0 w-96 h-96 bg-gradient-to-br from-orange-100/40 to-yellow-200/20 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
+    <div class="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-tl from-blue-100/30 to-purple-100/20 rounded-full blur-3xl translate-x-1/2 translate-y-1/2"></div>
+    
+    <Container>
+      <!-- Enhanced Section Header -->
+      <div class="text-center mb-16 fade-in-scroll">
+        <h1 class="font-playfair text-4xl md:text-6xl font-bold mb-3 mt-6 text-gray-800 leading-tight">
+          Services & Investment
+        </h1>
+        <!-- Accent divider line -->
+        <div class="h-1 w-12 bg-orange-500 rounded mx-auto mb-6"></div>
+        <p class="text-xl text-gray-700 max-w-4xl mx-auto leading-relaxed tracking-wide">
+          Professional breeding services and champion English Bulldog investments. Quality genetics, exceptional care, and lifelong support.
+        </p>
+      </div>
 
-    <div
-      class="grid md:grid-cols-3 gap-10 mx-auto max-w-(--breakpoint-lg) mt-12">
-      {pricing.map((item) => <PricingCard plan={item} />)}
-    </div>
-  </Container>
+      <!-- Services Grid -->
+      <div class="max-w-7xl mx-auto">
+        <div class="grid lg:grid-cols-3 gap-8">
+          {services.map((service) => (
+            <div class={`relative bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border ${service.popular ? 'border-orange-300 ring-2 ring-orange-100' : 'border-gray-200'} group`}>
+              
+              {/* Popular Badge */}
+              {service.popular && (
+                <div class="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                  <span class="bg-gradient-to-r from-orange-500 to-orange-600 text-white text-sm font-bold px-6 py-2 rounded-full shadow-lg">
+                    ⭐ Most Popular
+                  </span>
+                </div>
+              )}
+              
+              <div class="text-center mb-8">
+                {/* Icon */}
+                <div class="w-20 h-20 bg-gradient-to-r from-orange-100 to-orange-200 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
+                  <span class="text-4xl">{service.icon}</span>
+                </div>
+                
+                {/* Service Name */}
+                <h3 class="font-playfair text-2xl font-bold text-gray-800 mb-3">{service.name}</h3>
+                
+                {/* Price */}
+                <div class="mb-4">
+                  <span class="text-3xl font-bold text-orange-600">{service.price}</span>
+                </div>
+                
+                {/* Description */}
+                <p class="text-gray-600 leading-relaxed mb-6">{service.description}</p>
+              </div>
+              
+              {/* Features List */}
+              <div class="space-y-4 mb-8">
+                {service.features.map((feature) => (
+                  <div class="flex items-start gap-3">
+                    <div class="w-5 h-5 bg-gradient-to-r from-green-400 to-green-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                      </svg>
+                    </div>
+                    <span class="text-gray-700 leading-relaxed">{feature}</span>
+                  </div>
+                ))}
+              </div>
+              
+              {/* CTA Button */}
+              <div class="text-center">
+                <a 
+                  href={service.button.link}
+                  class={`inline-flex items-center justify-center w-full px-6 py-4 rounded-xl font-bold text-lg transition-all duration-300 hover:scale-105 shadow-lg ${
+                    service.popular 
+                      ? 'bg-gradient-to-r from-orange-500 via-orange-600 to-orange-700 hover:from-orange-600 hover:via-orange-700 hover:to-orange-800 text-white shadow-orange-200' 
+                      : 'border-2 border-orange-500 text-orange-600 hover:bg-orange-50 hover:border-orange-600'
+                  }`}
+                >
+                  {service.button.text}
+                  <Icon class="w-5 h-5 ml-2" name="bx:bxs-right-arrow" />
+                </a>
+              </div>
+              
+            </div>
+          ))}
+        </div>
+        
+        {/* Bottom CTA Section */}
+        <div class="mt-20 text-center fade-in-scroll delay-400">
+          <div class="bg-gradient-to-r from-orange-50/50 via-white to-blue-50/30 rounded-3xl p-12 border border-orange-200/50 shadow-lg max-w-4xl mx-auto">
+            <div class="mb-8">
+              <div class="w-16 h-16 bg-gradient-to-r from-orange-400 to-orange-500 rounded-full flex items-center justify-center mx-auto mb-6">
+                <span class="text-3xl">🏆</span>
+              </div>
+            </div>
+            
+            <h3 class="font-playfair text-3xl font-bold text-gray-800 mb-4">
+              Questions About Our Services?
+            </h3>
+            <p class="text-lg text-gray-600 mb-8 max-w-2xl mx-auto leading-relaxed">
+              Every Max Line Bulldog comes with our commitment to excellence. Contact us to discuss your specific needs and learn more about our breeding program.
+            </p>
+            
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+              <a 
+                href="/contact" 
+                class="bg-gradient-to-r from-orange-500 via-orange-600 to-orange-700 hover:from-orange-600 hover:via-orange-700 hover:to-orange-800 text-white px-8 py-4 rounded-full font-bold text-lg transition-all duration-300 hover:scale-105 shadow-lg inline-flex items-center justify-center"
+              >
+                <Icon class="w-5 h-5 mr-2" name="bx:bxs-phone" />
+                Contact Us Today
+              </a>
+              <a 
+                href="/breeding-program" 
+                class="border-2 border-orange-500 text-orange-600 hover:bg-orange-50 px-8 py-4 rounded-full font-bold text-lg transition-all duration-300 hover:scale-105 inline-flex items-center justify-center"
+              >
+                <Icon class="w-5 h-5 mr-2" name="bx:bxs-info-circle" />
+                Learn About Our Program
+              </a>
+            </div>
+          </div>
+        </div>
+        
+      </div>
+    </Container>
+  </section>
 </Layout>

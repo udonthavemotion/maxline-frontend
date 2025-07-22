@@ -105,6 +105,7 @@ export interface Puppy {
   description?: string | any[]; // Can be string or blocks array
   healthrecords?: string | any[]; // Can be string or richtext array
   images?: StrapiImage[];
+  page_gallery?: StrapiImage[]; // Gallery images for detail page
   createdAt: string;
   updatedAt: string;
   publishedAt?: string;
@@ -367,7 +368,7 @@ class StrapiService {
     return this.request<TermsOfService>('/terms-of-service?populate=*');
   }
 
-  // Utility methods - Updated for new type structure
+  // Utility methods - Updated for new type structure with Cloudinary video optimization
   getImageUrl(image: StrapiImage, size: 'thumbnail' | 'small' | 'medium' | 'large' = 'medium'): string {
     if (!image?.url) {
       return 'https://placehold.co/400x300?text=No+Image';
@@ -383,7 +384,22 @@ class StrapiService {
       url = image.url;
     }
 
-    // If URL is already a complete URL (Cloudinary), return as-is
+    // Enhanced Cloudinary optimization for videos
+    if (url.includes('res.cloudinary.com') && mime.startsWith('video/')) {
+      // Apply Cloudinary video transformations for better quality and performance
+      const cloudinaryOptimizations = 'q_auto:best,f_auto,w_1920,c_limit,fl_progressive';
+      
+      // Insert transformations into Cloudinary URL
+      if (url.includes('/video/upload/')) {
+        url = url.replace('/video/upload/', `/video/upload/${cloudinaryOptimizations}/`);
+      } else if (url.includes('/upload/')) {
+        url = url.replace('/upload/', `/upload/${cloudinaryOptimizations}/`);
+      }
+      
+      console.log('🎬 Optimized video URL:', url);
+    }
+
+    // If URL is already a complete URL (Cloudinary), return optimized or as-is
     if (url.startsWith('http://') || url.startsWith('https://')) {
       return url;
     }

@@ -30,12 +30,12 @@ const { title, lastItem, children } = Astro.props;
             : "lg:left-0 origin-top-left",
         ]}>
         <div
-          class="lg:py-3 lg:bg-dark-navy-light lg:rounded-md lg:shadow-blue-glow lg:border lg:border-vibrant-blue flex flex-col navbar-dropdown-container">
+          class="lg:py-3 lg:bg-dark-navy-light lg:rounded-md lg:shadow-md lg:border lg:border-vibrant-blue flex flex-col navbar-dropdown-container min-w-[180px]">
           {
             children.map((item) => (
               <a
                 href={item.path}
-                class="navbar-dropdown-item text-light-gray text-base font-medium flex items-center justify-start">
+                class="navbar-dropdown-item text-light-gray text-base font-medium flex items-center justify-start py-2 px-4">
                 {item.title}
               </a>
             ))

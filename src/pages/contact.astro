@@ -7,54 +7,117 @@ import { Icon } from "astro-icon/components";
 ---
 
 <Layout title="Contact">
-  <Container>
-    <Sectionhead>
-      <Fragment slot="title">Contact</Fragment>
-      <Fragment slot="desc">We are here to help with all your English Bulldog needs.</Fragment>
-    </Sectionhead>
-
-    <div class="grid md:grid-cols-2 gap-10 mx-auto max-w-4xl mt-16">
-      <div>
-        <h2 class="font-medium text-2xl text-gray-800">Contact Maxline Bulldogs</h2>
-        <p class="text-lg leading-relaxed text-slate-500 mt-3">
-          Ready to welcome a legendary English Bulldog into your family? 
-          Contact CEO Mike and our team for personalized breeding consultation.
+  <!-- Enhanced Contact Page with Modern Design -->
+  <section class="py-16 px-4 md:px-8 bg-gradient-to-b from-white via-gray-50 to-white relative overflow-hidden">
+    <!-- Background decorative elements -->
+    <div class="absolute top-0 left-0 w-96 h-96 bg-gradient-to-br from-blue-100/40 to-indigo-200/20 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
+    <div class="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-tl from-orange-100/30 to-pink-100/20 rounded-full blur-3xl translate-x-1/2 translate-y-1/2"></div>
+    
+    <Container>
+      <!-- Enhanced Section Header -->
+      <div class="text-center mb-16 fade-in-scroll">
+        <h1 class="font-playfair text-4xl md:text-6xl font-bold mb-3 mt-6 text-gray-800 leading-tight">
+          Get In Touch With Us
+        </h1>
+        <!-- Accent divider line -->
+        <div class="h-1 w-12 bg-orange-500 rounded mx-auto mb-6"></div>
+        <p class="text-xl text-gray-700 max-w-4xl mx-auto leading-relaxed tracking-wide">
+          Ready to welcome a legendary English Bulldog into your family? Contact our expert team for personalized breeding consultations.
         </p>
-        <div class="mt-5">
-          <div class="flex items-center mt-2 space-x-2 text-gray-600">
-            <Icon class="text-gray-400 w-4 h-4" name="uil:map-marker" />
-            <span>Wellington, Florida & United Kingdom</span>
+      </div>
+
+      <!-- Enhanced Two-Column Layout -->
+      <div class="max-w-7xl mx-auto bg-gradient-to-b from-white to-gray-50/50 rounded-3xl shadow-md p-8 md:p-12 relative">
+        <div class="grid md:grid-cols-2 gap-12 mx-auto">
+          
+          <!-- Left Column - Contact Information -->
+          <div class="space-y-8">
+            <div>
+              <h2 class="font-playfair text-3xl font-bold text-gray-800 mb-4">Contact Max Line Bulldogs</h2>
+              <p class="text-lg leading-relaxed text-gray-600 mb-6">
+                Ready to welcome a legendary English Bulldog into your family? 
+                Contact CEO Mike and our team for personalized breeding consultation.
+              </p>
+            </div>
+            
+            <!-- Contact Details with Modern Cards -->
+            <div class="space-y-4">
+              <div class="flex items-center p-4 bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border border-gray-100">
+                <div class="w-12 h-12 bg-gradient-to-r from-orange-400 to-orange-500 rounded-full flex items-center justify-center flex-shrink-0 mr-4">
+                  <Icon class="text-white w-6 h-6" name="uil:map-marker" />
+                </div>
+                <div>
+                  <h3 class="font-bold text-gray-800 mb-1">Location</h3>
+                  <p class="text-gray-600">Wellington, Florida & United Kingdom</p>
+                </div>
+              </div>
+              
+              <div class="flex items-center p-4 bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border border-gray-100">
+                <div class="w-12 h-12 bg-gradient-to-r from-blue-400 to-blue-500 rounded-full flex items-center justify-center flex-shrink-0 mr-4">
+                  <Icon class="text-white w-6 h-6" name="uil:phone" />
+                </div>
+                <div>
+                  <h3 class="font-bold text-gray-800 mb-1">Phone</h3>
+                  <a href="tel:+15615162560" class="text-blue-600 hover:text-blue-800 font-medium transition-colors">561-516-2560</a>
+                </div>
+              </div>
+              
+              <div class="flex items-center p-4 bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border border-gray-100">
+                <div class="w-12 h-12 bg-gradient-to-r from-green-400 to-green-500 rounded-full flex items-center justify-center flex-shrink-0 mr-4">
+                  <Icon class="text-white w-6 h-6" name="uil:envelope" />
+                </div>
+                <div>
+                  <h3 class="font-bold text-gray-800 mb-1">Email</h3>
+                  <a href="mailto:maxlinebulldogs@gmail.com" class="text-green-600 hover:text-green-800 font-medium transition-colors">maxlinebulldogs@gmail.com</a>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Enhanced Team/Partnership Cards -->
+            <div class="space-y-4">
+              <div class="bg-gradient-to-r from-blue-50 via-white to-blue-50 p-6 rounded-2xl border border-blue-200 shadow-lg">
+                <div class="flex items-start gap-4">
+                  <div class="w-14 h-14 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
+                    <span class="text-2xl">👨‍💼</span>
+                  </div>
+                  <div>
+                    <h3 class="font-playfair font-bold text-xl text-gray-800 mb-2">CEO: Mike</h3>
+                    <p class="text-gray-700 leading-relaxed">
+                      Leading our breeding program with passion and dedication. 
+                      "JUST FOR THE LOVE OF IT" - where legends are made through 
+                      strategic US/UK partnerships and quality breeding program.
+                    </p>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="bg-gradient-to-r from-orange-50 via-white to-orange-50 p-6 rounded-2xl border border-orange-200 shadow-lg">
+                <div class="flex items-start gap-4">
+                  <div class="w-14 h-14 bg-gradient-to-r from-orange-500 to-orange-600 rounded-full flex items-center justify-center flex-shrink-0">
+                    <span class="text-2xl">🤝</span>
+                  </div>
+                  <div>
+                    <h3 class="font-playfair font-bold text-xl text-gray-800 mb-2">Partnership</h3>
+                    <p class="text-gray-700 leading-relaxed">
+                      In collaboration with HorrorBullz HQ for international breeding excellence.
+                      Follow us: @maxlinebulldogs & @horrorbullzhq
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="flex items-center mt-2 space-x-2 text-gray-600">
-            <Icon class="text-gray-400 w-4 h-4" name="uil:phone" />
-            <a href="tel:+15615162560">561-516-2560</a>
+          
+          <!-- Right Column - Contact Form -->
+          <div>
+            <div class="bg-white p-6 md:p-8 rounded-2xl shadow-lg border border-gray-100">
+              <h3 class="font-playfair text-2xl font-bold text-gray-800 mb-6 text-center">Send Us a Message</h3>
+              <Contactform />
+            </div>
           </div>
-          <div class="flex items-center mt-2 space-x-2 text-gray-600">
-            <Icon class="text-gray-400 w-4 h-4" name="uil:envelope" />
-            <a href="mailto:maxlinebulldogs@gmail.com">maxlinebulldogs@gmail.com</a>
-          </div>
-        </div>
-        
-        <div class="mt-6 p-4 bg-blue-50 rounded-lg">
-          <h3 class="font-semibold text-gray-800 mb-2">CEO: Mike</h3>
-          <p class="text-sm text-gray-600">
-            Leading our breeding program with passion and dedication. 
-            "JUST FOR THE LOVE OF IT" - where legends are made through 
-            strategic US/UK partnerships and quality breeding program.
-          </p>
-        </div>
-        
-        <div class="mt-4 p-4 bg-green-50 rounded-lg">
-          <h3 class="font-semibold text-gray-800 mb-2">Partnership</h3>
-          <p class="text-sm text-gray-600">
-            In collaboration with HorrorBullz HQ for international breeding excellence.
-            Follow us: @maxlinebulldogs & @horrorbullzhq
-          </p>
+          
         </div>
       </div>
-      <div>
-        <Contactform />
-      </div>
-    </div>
-  </Container>
+    </Container>
+  </section>
 </Layout>

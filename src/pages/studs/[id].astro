@@ -1,28 +1,23 @@
 ---
 import Layout from "@/layouts/Layout.astro";
 import Container from "@/components/container.astro";
-import { getStuds, getImageUrl, formatPrice, formatRichText, type Stud } from "@/lib/strapi";
+import { getStud, getImageUrl, formatPrice, formatRichText, type Stud } from "@/lib/strapi";
 
-export const prerender = true;
-
-export async function getStaticPaths() {
-  try {
-    const response = await getStuds({
-      populate: '*',
-      pageSize: 100
-    });
-    return response.data.map((stud: Stud) => ({
-      params: { id: stud.documentId },
-      props: { stud }
-    }));
-  } catch (error) {
-    console.error('Detail fetch error:', error);
-    return [];
-  }
-}
-
-const { stud } = Astro.props;
+// SSR-enabled dynamic route - fetches data on each request for live updates
 const { id } = Astro.params;
+
+let stud: Stud | null = null;
+let error: string | null = null;
+
+try {
+  if (id) {
+    const response = await getStud(id, '*');
+    stud = response.data;
+  }
+} catch (err) {
+  console.error('SSR fetch error:', err);
+  error = 'Failed to load stud data';
+}
 
 // Fallback if stud not found
 if (!stud) {
@@ -239,7 +234,7 @@ const backgroundColor = stud.background_color || '#f8fafc';
               <div class="text-gray-700 leading-relaxed">
                 {typeof stud.description === 'string' 
                   ? stud.description 
-                  : formatRichText(stud.description)
+                  : <Fragment set:html={formatRichText(stud.description)} />
                 }
               </div>
             </div>

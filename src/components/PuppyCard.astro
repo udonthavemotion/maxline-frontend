@@ -11,7 +11,7 @@ const { puppy } = Astro.props;
 <article 
   class="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 puppy-card"
   data-status={puppy.avaliable}
-  onclick={`window.location.href='/puppies/${puppy.id}'`}
+  onclick={`window.location.href='/puppies/${puppy.documentId}'`}
 >
   <div class="relative photo-hover">
     {puppy.images && puppy.images.length > 0 ? (
@@ -19,7 +19,7 @@ const { puppy } = Astro.props;
         <div class="relative w-full h-64 overflow-hidden">
           <video 
             src={getImageUrl(puppy.images[0])}
-            class="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+            class="w-full max-h-[300px] object-contain rounded-t-2xl shadow-lg transition-transform duration-300 hover:scale-105"
             autoplay
             muted
             loop
@@ -30,7 +30,7 @@ const { puppy } = Astro.props;
           </video>
           <!-- Video indicator -->
           <div class="absolute top-2 right-2 bg-black/50 backdrop-blur-sm text-white px-2 py-1 rounded text-xs font-medium">
-            VIDEO
+            🎥 VIDEO
           </div>
           <!-- Subtle play indicator overlay -->
           <div class="absolute inset-0 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-300 bg-black/20">
@@ -60,7 +60,7 @@ const { puppy } = Astro.props;
     <!-- Hover overlay text -->
     <div class="overlay-text">
       <h3 class="text-xl font-bold">{puppy.name}</h3>
-      <p class="text-lg">{formatPrice(puppy.price)}</p>
+      <p class="text-lg">{formatPrice(puppy.price || 0)}</p>
     </div>
     <!-- Status badge in top right -->
     <div class="absolute top-3 right-3">
@@ -87,18 +87,18 @@ const { puppy } = Astro.props;
     </div>
     
     <div class="mb-3 text-sm text-gray-600">
-      <p><strong>Price:</strong> {formatPrice(puppy.price)}</p>
+      <p><strong>Price:</strong> {formatPrice(puppy.price || 0)}</p>
       {puppy.gender && <p><strong>Gender:</strong> {puppy.gender}</p>}
       {puppy.age && <p><strong>Age:</strong> {puppy.age}</p>}
     </div>
     
     {puppy.description && (
-      <p class="text-gray-600 text-sm mb-4 line-clamp-3">
+      <div class="text-gray-600 text-sm mb-4 line-clamp-3">
         {typeof puppy.description === 'string' 
           ? puppy.description 
-          : formatRichText(puppy.description)
+          : <Fragment set:html={formatRichText(puppy.description)} />
         }
-      </p>
+      </div>
     )}
     
     <a 

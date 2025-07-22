@@ -42,61 +42,69 @@ const logoUrl = privacyPolicy?.company_logo ? getImageUrl(privacyPolicy.company_
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin slot="head">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet" slot="head">
 
-  <main class="bg-[#F5F0E8] min-h-screen">
+  <!-- Enhanced Privacy Policy Page with Modern Design -->
+  <section class="py-16 px-4 md:px-8 bg-gradient-to-b from-white via-gray-50 to-white relative overflow-hidden min-h-screen">
+    <!-- Background decorative elements -->
+    <div class="absolute top-0 left-0 w-96 h-96 bg-gradient-to-br from-blue-100/40 to-indigo-200/20 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
+    <div class="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-tl from-orange-100/30 to-pink-100/20 rounded-full blur-3xl translate-x-1/2 translate-y-1/2"></div>
+    
     <!-- Hero Section -->
-    <section class="bg-[#F5F0E8] pt-20 pb-16">
-      <div class="max-w-4xl mx-auto px-4 md:px-8 text-center">
+    <div class="max-w-6xl mx-auto">
+      <!-- Enhanced Section Header -->
+      <div class="text-center mb-16 fade-in-scroll">
         <!-- Company Logo -->
         {logoUrl && (
-          <div class="mb-6">
+          <div class="mb-8">
             <img 
               src={logoUrl} 
               alt="Max Line Bulldogs Logo" 
-              class="mx-auto h-16 w-auto object-contain"
+              class="mx-auto h-20 w-auto object-contain"
             />
           </div>
         )}
         
-        <h1 class="text-5xl md:text-6xl font-bold text-gray-800 mb-4" style="font-family: 'Playfair Display', serif;">
+        <h1 class="font-playfair text-4xl md:text-6xl font-bold mb-3 mt-6 text-gray-800 leading-tight">
           {privacyPolicy?.title || 'Privacy Policy'} 🐾
         </h1>
-        <p class="text-xl text-gray-600 font-medium" style="font-family: 'Inter', sans-serif;">
+        <!-- Accent divider line -->
+        <div class="h-1 w-12 bg-orange-500 rounded mx-auto mb-6"></div>
+        <p class="text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed tracking-wide">
           Your Privacy Matters to Us
         </p>
         
         {privacyPolicy?.lastupdated && (
-          <p class="text-sm text-gray-500 mt-4" style="font-family: 'Inter', sans-serif;">
+          <p class="text-sm text-gray-600 mt-6 bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full inline-block shadow-sm">
             Last updated: {formatDate(privacyPolicy.lastupdated)}
           </p>
         )}
       </div>
-    </section>
 
-    <!-- Content Section -->
-    <section class="max-w-4xl mx-auto px-4 md:px-8 pb-20">
-      <div class="bg-white rounded-lg shadow-md p-8 md:p-12">
+      <!-- Content Section with Enhanced Container -->
+      <div class="max-w-4xl mx-auto bg-gradient-to-b from-white to-gray-50/50 rounded-3xl shadow-lg p-8 md:p-12 relative border border-gray-100">
         {hasContentFromStrapi && contentHtml ? (
           <div 
-            class="prose prose-lg max-w-none privacy-content" 
+            class="prose prose-lg max-w-none privacy-content text-gray-700" 
             style="font-family: 'Inter', sans-serif; font-size: 1.1rem; line-height: 1.6;"
             set:html={contentHtml}
           />
         ) : (
           <div class="space-y-12">
             <!-- Introduction -->
-            <div class="space-y-4">
-              <h2 class="text-2xl font-bold text-gray-800 flex items-center" style="font-family: 'Playfair Display', serif;">
+            <div class="space-y-6 mb-12">
+              <h2 class="font-playfair text-3xl font-bold text-gray-800 flex items-center gap-3 mb-4">
                 🐾 Introduction
               </h2>
-              <div class="prose prose-lg max-w-none" style="font-family: 'Inter', sans-serif; font-size: 1.1rem; line-height: 1.6;">
-                <p>Max Line Bulldogs is committed to protecting your privacy and personal information. This Privacy Policy explains how we collect, use, and safeguard your information when you visit our website, inquire about our bulldogs, or engage with our breeding program.</p>
-                <p>We understand that your privacy is important, especially when sharing personal details about your interest in welcoming a bulldog into your family. This policy outlines our commitment to transparency and responsible data handling.</p>
+              <div class="bg-gradient-to-r from-orange-50 via-white to-orange-50 p-6 rounded-2xl border border-orange-200 shadow-sm">
+                <div class="prose prose-lg max-w-none text-gray-700 leading-relaxed">
+                  <p>Max Line Bulldogs is committed to protecting your privacy and personal information. This Privacy Policy explains how we collect, use, and safeguard your information when you visit our website, inquire about our bulldogs, or engage with our breeding program.</p>
+                  <p>We understand that your privacy is important, especially when sharing personal details about your interest in welcoming a bulldog into your family. This policy outlines our commitment to transparency and responsible data handling.</p>
+                </div>
               </div>
             </div>
 
             <!-- Data Collected -->
-            <div class="space-y-4">
-              <h2 class="text-2xl font-bold text-gray-800 flex items-center" style="font-family: 'Playfair Display', serif;">
+            <div class="space-y-6 mb-12">
+              <h2 class="font-playfair text-3xl font-bold text-gray-800 flex items-center gap-3 mb-4">
                 🐾 Information We Collect
               </h2>
               <div class="prose prose-lg max-w-none" style="font-family: 'Inter', sans-serif; font-size: 1.1rem; line-height: 1.6;">

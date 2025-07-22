@@ -168,14 +168,14 @@ try {
                 </div>
               </div>
               
-              <p class="text-gray-600 text-sm mb-3">
+              <div class="text-gray-600 text-sm mb-3">
                 {typeof stud.description === 'string' 
                   ? stud.description 
                   : stud.description 
-                    ? formatRichText(stud.description)
+                    ? <Fragment set:html={formatRichText(stud.description)} />
                     : 'No description available'
                 }
-              </p>
+              </div>
               
               <!-- Bloodlines -->
               {stud.bloodlines && (
