@@ -58,11 +58,12 @@ try {
   };
 }
 
-// Helper function to process rich text content properly
+// Helper function to process rich text content properly - ENHANCED for Strapi v5 blocks
 function processRichText(content: string | any[] | undefined): string {
   if (!content) return '';
   if (typeof content === 'string') return content;
   if (Array.isArray(content)) {
+    // Enhanced handling for Strapi v5 rich text blocks
     return formatRichText(content);
   }
   return '';
@@ -139,7 +140,7 @@ const masonryGalleryItems = galleryImages.map((image, index) => {
   };
 });
 
-// 🎯 Get partnership fields with proper fallbacks
+// 🎯 Get partnership fields with proper rich text processing
 const partnershipThemeEnabled = breedingProgram?.partnership_theme_enabled ?? true;
 const partnershipBrandName = breedingProgram?.partnership_brand_name || 'HORRORBULLZHQ';
 const partnershipGalleryTitle = breedingProgram?.partnership_gallery_title || '🏆 Max Line HorrorBullz Gallery 🏆';
@@ -484,9 +485,9 @@ const partnershipComingSoonMessage = breedingProgram?.partnership_coming_soon_me
               <h2 class="text-5xl md:text-6xl font-playfair font-bold mb-6 bg-gradient-to-r from-red-500 via-red-600 to-red-700 bg-clip-text text-transparent leading-tight md:leading-tight px-4 py-3">
                 {partnershipGalleryTitle}
               </h2>
-              <p class="text-xl text-red-100 max-w-4xl mx-auto leading-relaxed font-inter">
-                {partnershipGalleryDescription}
-              </p>
+              <div class="rich-text text-xl text-red-100 max-w-4xl mx-auto leading-relaxed font-inter">
+                <div set:html={partnershipGalleryDescription} />
+              </div>
               <div class="mt-8">
                 <div class="w-40 h-1.5 bg-gradient-to-r from-red-600 via-red-500 to-red-700 mx-auto rounded-full"></div>
               </div>
@@ -740,9 +741,9 @@ const partnershipComingSoonMessage = breedingProgram?.partnership_coming_soon_me
               <h2 class="text-5xl md:text-6xl font-playfair font-bold mb-6 bg-gradient-to-r from-orange-600 via-orange-500 to-orange-700 bg-clip-text text-transparent leading-tight md:leading-tight px-4 py-3">
                 {partnershipGalleryTitle.replace(/💀/g, '🏆')}
               </h2>
-              <p class="text-xl text-gray-700 max-w-4xl mx-auto leading-relaxed font-inter">
-                {partnershipGalleryDescription}
-              </p>
+              <div class="rich-text text-xl text-gray-700 max-w-4xl mx-auto leading-relaxed font-inter">
+                <div set:html={partnershipGalleryDescription} />
+              </div>
               <div class="mt-8">
                 <div class="w-40 h-1.5 bg-gradient-to-r from-orange-400 via-orange-500 to-orange-600 mx-auto rounded-full"></div>
               </div>
@@ -1522,6 +1523,52 @@ const partnershipComingSoonMessage = breedingProgram?.partnership_coming_soon_me
 </script>
 
 <style>
+  /* 🎯 RICH TEXT STYLING - Proper formatting for Strapi v5 blocks */
+  .rich-text {
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+  
+  .rich-text p {
+    margin-bottom: 1rem;
+  }
+  
+  .rich-text p:last-child {
+    margin-bottom: 0;
+  }
+  
+  .rich-text h1, 
+  .rich-text h2, 
+  .rich-text h3, 
+  .rich-text h4, 
+  .rich-text h5, 
+  .rich-text h6 {
+    margin-bottom: 0.75rem;
+    font-weight: 600;
+  }
+  
+  .rich-text ul, 
+  .rich-text ol {
+    margin-bottom: 1rem;
+    padding-left: 1.5rem;
+  }
+  
+  .rich-text li {
+    margin-bottom: 0.25rem;
+  }
+  
+  .rich-text strong {
+    font-weight: 700;
+  }
+  
+  .rich-text em {
+    font-style: italic;
+  }
+  
+  .rich-text u {
+    text-decoration: underline;
+  }
+
   /* 🚀 ENHANCED MODAL STYLES - Cross-browser Compatible */
   .modal-overlay {
     position: fixed;
