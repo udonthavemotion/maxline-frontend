@@ -24,7 +24,13 @@ const allMedia = stud.images || [];
       
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {allMedia.map((media, index) => (
-          <div class="relative group cursor-pointer gallery-item" data-index={index}>
+          <div 
+            class="relative group cursor-pointer gallery-item hover:transform hover:scale-105 transition-all duration-300" 
+            data-index={index}
+            data-media-url={getImageUrl(media, 'large')}
+            data-media-alt={media.alternativeText || `${stud.name} photo ${index + 1}`}
+            data-is-video={isVideo(media) ? 'true' : 'false'}
+          >
             <div class="aspect-square overflow-hidden rounded-lg shadow-lg">
               {isVideo(media) ? (
                 <div class="relative w-full h-full">
@@ -79,48 +85,219 @@ const allMedia = stud.images || [];
   </section>
 )}
 
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    const galleryItems = document.querySelectorAll('.gallery-item');
+<!-- Lightbox Modal HTML -->
+<div id="lightbox-modal" class="fixed inset-0 bg-black bg-opacity-95 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+  <div class="relative max-w-7xl max-h-full w-full h-full flex items-center justify-center">
+    <!-- Close Button -->
+    <button 
+      id="lightbox-close" 
+      class="absolute top-4 right-4 text-white hover:text-orange-400 transition-colors duration-200 z-10 bg-black bg-opacity-50 rounded-full p-3 hover:bg-opacity-70"
+      aria-label="Close lightbox"
+    >
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+      </svg>
+    </button>
     
-    galleryItems.forEach(item => {
-      item.addEventListener('click', function() {
-        const index = this.getAttribute('data-index');
-        const media = this.querySelector('img, video');
-        
-        if (media) {
-          // Create a simple lightbox
-          const lightbox = document.createElement('div');
-          lightbox.className = 'fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 cursor-pointer';
-          
-          const mediaElement = media.cloneNode(true);
-          mediaElement.className = 'max-w-full max-h-full object-contain';
-          
-          // Add controls for video
-          if (mediaElement.tagName === 'VIDEO') {
-            mediaElement.controls = true;
-            mediaElement.autoplay = true;
+    <!-- Navigation Buttons -->
+    <button 
+      id="lightbox-prev" 
+      class="absolute left-4 top-1/2 transform -translate-y-1/2 text-white hover:text-orange-400 transition-colors duration-200 bg-black bg-opacity-50 rounded-full p-3 hover:bg-opacity-70"
+      aria-label="Previous image"
+    >
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+      </svg>
+    </button>
+    
+    <button 
+      id="lightbox-next" 
+      class="absolute right-4 top-1/2 transform -translate-y-1/2 text-white hover:text-orange-400 transition-colors duration-200 bg-black bg-opacity-50 rounded-full p-3 hover:bg-opacity-70"
+      aria-label="Next image"
+    >
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+      </svg>
+    </button>
+    
+    <!-- Media Container -->
+    <div id="lightbox-content" class="flex items-center justify-center w-full h-full">
+      <!-- Content will be inserted here -->
+    </div>
+    
+    <!-- Image Info -->
+    <div class="absolute bottom-4 left-4 right-4 text-center">
+      <p id="lightbox-caption" class="text-white text-lg mb-2"></p>
+      <p id="lightbox-counter" class="text-gray-300 text-sm"></p>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Enhanced lightbox functionality - Plain JavaScript
+  function setupStudGallery() {
+    let modal = null;
+    let currentIndex = 0;
+    let mediaItems = [];
+    
+    function init() {
+      // Wait for DOM to be ready
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', setupLightbox);
+      } else {
+        setupLightbox();
+      }
+    }
+    
+    function setupLightbox() {
+      modal = document.getElementById('lightbox-modal');
+      if (!modal) return;
+      
+      // Get all gallery items
+      mediaItems = Array.from(document.querySelectorAll('.gallery-item'));
+      
+      // Add click handlers to gallery items
+      mediaItems.forEach((item, index) => {
+        item.addEventListener('click', (e) => {
+          e.preventDefault();
+          openLightbox(index);
+        });
+      });
+      
+      // Add modal event listeners
+      setupModalEvents();
+    }
+    
+    function setupModalEvents() {
+      const closeBtn = document.getElementById('lightbox-close');
+      const prevBtn = document.getElementById('lightbox-prev');
+      const nextBtn = document.getElementById('lightbox-next');
+      
+      // Close button
+      if (closeBtn) {
+        closeBtn.addEventListener('click', closeLightbox);
+      }
+      
+      // Navigation buttons
+      if (prevBtn) {
+        prevBtn.addEventListener('click', showPrevious);
+      }
+      if (nextBtn) {
+        nextBtn.addEventListener('click', showNext);
+      }
+      
+      // Close on background click
+      if (modal) {
+        modal.addEventListener('click', (e) => {
+          if (e.target === modal) {
+            closeLightbox();
           }
-          
-          lightbox.appendChild(mediaElement);
-          
-          // Close on click
-          lightbox.addEventListener('click', function(e) {
-            if (e.target === lightbox) {
-              document.body.removeChild(lightbox);
-            }
-          });
-          
-          // Close on escape key
-          document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-              document.body.removeChild(lightbox);
-            }
-          });
-          
-          document.body.appendChild(lightbox);
+        });
+      }
+      
+      // Keyboard navigation
+      document.addEventListener('keydown', (e) => {
+        if (modal && !modal.classList.contains('hidden')) {
+          switch(e.key) {
+            case 'Escape':
+              closeLightbox();
+              break;
+            case 'ArrowLeft':
+              showPrevious();
+              break;
+            case 'ArrowRight':
+              showNext();
+              break;
+          }
         }
       });
-    });
-  });
+    }
+    
+    function openLightbox(index) {
+      currentIndex = index;
+      showMedia();
+      if (modal) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+      }
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closeLightbox() {
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+      document.body.style.overflow = '';
+    }
+    
+    function showPrevious() {
+      currentIndex = (currentIndex - 1 + mediaItems.length) % mediaItems.length;
+      showMedia();
+    }
+    
+    function showNext() {
+      currentIndex = (currentIndex + 1) % mediaItems.length;
+      showMedia();
+    }
+    
+    function showMedia() {
+      const item = mediaItems[currentIndex];
+      if (!item) return;
+      
+      const mediaUrl = item.dataset.mediaUrl;
+      const mediaAlt = item.dataset.mediaAlt;
+      const isVideo = item.dataset.isVideo === 'true';
+      
+      const content = document.getElementById('lightbox-content');
+      const caption = document.getElementById('lightbox-caption');
+      const counter = document.getElementById('lightbox-counter');
+      
+      if (content) {
+        if (isVideo) {
+          content.innerHTML = `
+            <video 
+              controls 
+              autoplay 
+              class="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
+              style="max-height: 80vh;"
+            >
+              <source src="${mediaUrl}" type="video/mp4">
+              Your browser does not support video playback.
+            </video>
+          `;
+        } else {
+          content.innerHTML = `
+            <img 
+              src="${mediaUrl}" 
+              alt="${mediaAlt}" 
+              class="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
+              style="max-height: 80vh;"
+            />
+          `;
+        }
+      }
+      
+      if (caption) {
+        caption.textContent = mediaAlt || '';
+      }
+      
+      if (counter) {
+        counter.textContent = `${currentIndex + 1} of ${mediaItems.length}`;
+      }
+      
+      // Update navigation button visibility
+      const prevBtn = document.getElementById('lightbox-prev');
+      const nextBtn = document.getElementById('lightbox-next');
+      
+      if (prevBtn) prevBtn.style.display = mediaItems.length > 1 ? 'block' : 'none';
+      if (nextBtn) nextBtn.style.display = mediaItems.length > 1 ? 'block' : 'none';
+    }
+    
+    // Initialize
+    init();
+  }
+  
+  // Run the setup
+  setupStudGallery();
 </script> 
