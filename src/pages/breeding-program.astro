@@ -480,16 +480,45 @@ const partnershipComingSoonMessage = breedingProgram?.partnership_coming_soon_me
           
           <div class="max-w-7xl mx-auto px-4 md:px-8 relative">
             
-            <!-- Gallery Header - Fixed text clipping issues -->
-            <div class="text-center mb-12 fade-in-scroll">
-              <h2 class="text-5xl md:text-6xl font-playfair font-bold mb-6 bg-gradient-to-r from-red-500 via-red-600 to-red-700 bg-clip-text text-transparent leading-tight md:leading-tight px-4 py-3">
-                {partnershipGalleryTitle}
-              </h2>
-              <div class="rich-text text-xl text-red-100 max-w-4xl mx-auto leading-relaxed font-inter">
-                <div set:html={partnershipGalleryDescription} />
+            <!-- Revamped MAXLINE HORRORBULLZ GALLERY Header - Horror Theme -->
+            <div class="text-center mb-16 fade-in-scroll">
+              <!-- Header -->
+              <div class="relative mb-10">
+                <h2 class="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-red-500 flex items-center justify-center gap-3">
+                  <span class="text-5xl animate-pulse">💀</span>
+                  MAXLINE HORRORBULLZ GALLERY
+                  <span class="text-5xl animate-pulse">💀</span>
+                </h2>
+                <p class="mt-2 text-sm uppercase tracking-widest text-red-300 font-medium">Where Florida grit meets UK blood.</p>
               </div>
-              <div class="mt-8">
-                <div class="w-40 h-1.5 bg-gradient-to-r from-red-600 via-red-500 to-red-700 mx-auto rounded-full"></div>
+
+              <!-- Subtext Block - Horror Theme -->
+              <div class="bg-black/70 backdrop-blur-md border border-red-600/50 rounded-xl p-6 sm:p-8 shadow-2xl shadow-red-900/50 space-y-6 max-w-5xl mx-auto">
+                <p class="text-lg sm:text-xl text-red-100 leading-relaxed">
+                  We came together with one goal in mind — to build something different.
+                  <span class="font-semibold text-white">MaxLine Bulldogs</span> brings the hands-on Florida pressure — the heat, the hustle, and the day-to-day work it takes to shape real bulldogs.
+                  <span class="font-semibold text-white">HORRORBULLZ</span> carries the heavy UK blood that brings bone, mass, and that unmistakable look you can't fake.
+                </p>
+                <p class="text-lg sm:text-xl text-red-100 leading-relaxed">
+                  We're not chasing hype. We're building <span class="font-bold text-red-400">real dogs</span> — with intention, structure, and presence. Every pairing is a move forward. Every pup is a piece of the vision.
+                  <br/>
+                  <span class="italic text-red-300">This is more than a collab — it's the start of something serious.</span>
+                </p>
+              </div>
+
+              <!-- Divider -->
+              <div class="flex justify-center mt-10">
+                <div class="h-1.5 w-20 bg-gradient-to-r from-red-600 via-red-500 to-red-700 rounded-full"></div>
+              </div>
+
+              <!-- Call to Action - Horror Theme -->
+              <div class="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-4 mt-10">
+                <a href="#masonry-container" class="bg-red-600 hover:bg-red-700 text-white font-semibold px-6 py-3 rounded-xl shadow-md border border-red-500/50 transition duration-200 inline-flex items-center gap-2">
+                  💀 View Gallery
+                </a>
+                <a href="/studs" class="border border-red-500 text-red-400 hover:bg-red-900/50 font-semibold px-6 py-3 rounded-xl shadow-md transition duration-200 inline-flex items-center gap-2">
+                  🧬 Meet Our Studs
+                </a>
               </div>
             </div>
           
