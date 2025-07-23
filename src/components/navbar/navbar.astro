@@ -1,6 +1,7 @@
 ---
 import Container from "@/components/container.astro";
 import Link from "@/components/ui/link.astro";
+import Logo from "@/components/ui/Logo.astro";
 import Dropdown from "./dropdown.astro";
 import { Astronav, MenuItems, MenuIcon } from "astro-navbar";
 
@@ -28,28 +29,13 @@ const menuitems = [
   <header class="flex flex-col lg:flex-row justify-between items-center my-5">
     <Astronav>
       <div class="flex w-full lg:w-auto items-center justify-between">
-        <a href="/" class="flex items-center gap-4">
-          <!-- Primary Brand: Max Line Bulldogs -->
-          <div class="flex items-center gap-2">
-            <img 
-              src="/logos/MLBlogo2Transparent.png" 
-              alt="Max Line Bulldogs" 
-              class="h-12 w-auto object-contain"
-            />
-            <div class="hidden sm:block">
-              <div class="font-heading font-bold text-lg text-brand-navy">Max Line Bulldogs</div>
-              <div class="text-xs text-muted">Wellington, FL & UK</div>
+        <a href="/" class="flex items-center gap-3 lg:gap-4 justify-center lg:justify-start flex-1 lg:flex-none">
+          <!-- Enhanced Brand with Dynamic Logo - Mobile Optimized -->
+          <div class="flex flex-col items-center text-center">
+            <div class="mb-1">
+              <Logo size="md" animated={true} priority={true} />
             </div>
-          </div>
-          
-          <!-- Partnership Indicator -->
-          <div class="hidden md:flex items-center gap-2 text-muted">
-            <span class="text-sm">×</span>
-            <img 
-              src="/logos/MrMuscleHBlogoPNG.png" 
-              alt="HorrorBullz HQ Partner" 
-              class="h-8 w-auto object-contain opacity-75"
-            />
+            <div class="font-heading font-bold text-lg text-brand-navy leading-tight">Max Line HorrorBullz</div>
           </div>
         </a>
         <div class="block lg:hidden">
@@ -96,3 +82,13 @@ const menuitems = [
     </div>
   </header>
 </Container>
+
+<style>
+  /* Mobile-specific centering improvements */
+  @media (max-width: 1024px) {
+    .brand-container {
+      justify-content: center;
+      width: 100%;
+    }
+  }
+</style>

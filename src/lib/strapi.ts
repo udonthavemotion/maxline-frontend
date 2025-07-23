@@ -219,13 +219,43 @@ class StrapiService {
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text().catch(() => 'Unable to read error response');
+        console.error(`Strapi API request failed:`, {
+          url,
+          status: response.status,
+          statusText: response.statusText,
+          error: errorText,
+          baseURL: this.baseURL,
+          hasToken: !!this.token
+        });
+        
+        // Provide specific error messages based on status code
+        if (response.status === 401) {
+          throw new Error(`Unauthorized (401): Please check your Strapi API token. Current token: ${this.token ? 'Present' : 'Missing'}`);
+        } else if (response.status === 403) {
+          throw new Error(`Forbidden (403): Your API token doesn't have permission to access this resource`);
+        } else if (response.status === 404) {
+          throw new Error(`Not Found (404): The requested resource doesn't exist at ${url}`);
+        } else if (response.status >= 500) {
+          throw new Error(`Server Error (${response.status}): Strapi server is experiencing issues`);
+        } else {
+          throw new Error(`HTTP error! status: ${response.status} - ${response.statusText}`);
+        }
       }
 
       const data = await response.json();
       return data;
     } catch (error) {
-      console.error('Strapi API request failed:', error);
+      // Enhanced error logging with environment info
+      console.error('Strapi API request failed:', {
+        error: error.message,
+        url,
+        baseURL: this.baseURL,
+        hasToken: !!this.token,
+        environment: import.meta.env.MODE
+      });
+      
+      // Re-throw the error for handling by calling code
       throw error;
     }
   }
@@ -368,6 +398,41 @@ class StrapiService {
     return this.request<TermsOfService>('/terms-of-service?populate=*');
   }
 
+  // Site Logo operations - Fetches from privacy policy or terms of service company_logo fields
+  async getSiteLogo(): Promise<{ url: string; alt: string }> {
+    try {
+      // First try privacy policy for company logo
+      const privacyResponse = await this.request<PrivacyPolicy>('/privacy-policy?populate=company_logo');
+      if (privacyResponse.data?.company_logo) {
+        return {
+          url: this.getImageUrl(privacyResponse.data.company_logo, 'medium'),
+          alt: privacyResponse.data.company_logo.alternativeText || 'Max Line HorrorBullz'
+        };
+      }
+      
+      // Fallback to terms of service
+      const termsResponse = await this.request<TermsOfService>('/terms-of-service?populate=company_logo');
+      if (termsResponse.data?.company_logo) {
+        return {
+          url: this.getImageUrl(termsResponse.data.company_logo, 'medium'),
+          alt: termsResponse.data.company_logo.alternativeText || 'Max Line HorrorBullz'
+        };
+      }
+      
+      // Final fallback to static file
+      return {
+        url: '/logos/MLBlogo2Transparent.png',
+        alt: 'Max Line HorrorBullz'
+      };
+    } catch (error) {
+      console.error('Error fetching site logo:', error);
+      return {
+        url: '/logos/MLBlogo2Transparent.png',
+        alt: 'Max Line HorrorBullz'
+      };
+    }
+  }
+
   // Utility methods - Updated for new type structure with Cloudinary video optimization
   getImageUrl(image: StrapiImage, size: 'thumbnail' | 'small' | 'medium' | 'large' = 'medium'): string {
     if (!image?.url) {
@@ -495,6 +560,8 @@ export const getPrivacyPolicy = () =>
   strapiService.getPrivacyPolicy();
 export const getTermsOfService = () => 
   strapiService.getTermsOfService();
+export const getSiteLogo = () => 
+  strapiService.getSiteLogo();
 export const getImageUrl = (image: StrapiImage, size?: 'thumbnail' | 'small' | 'medium' | 'large') => 
   strapiService.getImageUrl(image, size);
 export const isVideo = (media: StrapiImage) => 

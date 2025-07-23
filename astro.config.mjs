@@ -7,7 +7,7 @@ import vercel from "@astrojs/vercel";
 
 // https://astro.build/config
 export default defineConfig({
-  site: "https://maxlinexhorror-pxisu6g03-logan-folses-projects.vercel.app",
+  site: "https://maxlinebulldogs.vercel.app", // Updated to standard production URL
   integrations: [mdx(), sitemap(), icon()],
   output: "server",
   adapter: vercel(),

@@ -30,28 +30,28 @@ try {
   breedingProgram = {
     id: 1,
     documentId: "fallback",
-    title: 'MAX LINE BULLDOGS',
+    title: 'MAX LINE HORRORBULLZ',
     subtext: 'WHERE LEGENDS ARE MADE 🏆',
     description: 'Pioneering premium English Bulldog breeding through strategic imports, exotic genetics, and cultural influence. Our bloodlines represent the finest examples of champion heritage. 👨‍🦺',
-    partnership_note: 'In partnership with HorrorBulz HQ 🤝',
+    partnership_note: 'Wellington, FL and London, UK Operations 🌎',
     hero_media: [],
     Featured_IMAGE: undefined,
     photo_gallery: [],
     description_long: 'Our breeding program represents decades of dedication to the English Bulldog breed. We combine traditional breeding methods with modern genetic science to produce healthy, well-tempered bulldogs that embody the best of the breed standard. Each breeding decision is carefully planned, considering health clearances, temperament, conformation, and genetic diversity. 🎯',
     // Partnership fields with fallback values
-    partnership_gallery_title: '💀 HORRORBULLZHQ Gallery 💀',
+    partnership_gallery_title: '🏆 Max Line HorrorBullz Gallery 🏆',
     partnership_gallery_description: [],
-    partnership_featured_title: '💀 Featured: HORRORBULLZHQ Champion 💀',
-    partnership_highlights_title: '💀 Gallery Highlights 💀',
-    partnership_highlights_description: 'Discover the dark beauty, personality, and excellence that defines our HorrorBullzHQ family',
-    partnership_legacy_title: 'Our HorrorBullz Legacy',
+    partnership_featured_title: '🏆 Featured: Max Line HorrorBullz Champion 🏆',
+    partnership_highlights_title: '🏆 Gallery Highlights 🏆',
+    partnership_highlights_description: 'Discover the exceptional beauty, personality, and excellence that defines our Max Line HorrorBullz family',
+    partnership_legacy_title: 'Our Max Line HorrorBullz Legacy',
     partnership_legacy_description: [],
-    partnership_brand_name: 'HORRORBULLZHQ',
+    partnership_brand_name: 'MAX LINE HORRORBULLZ',
     partnership_theme_enabled: true,
-    partnership_featured_main_title: 'MAX LINE BULLDOGS',
-    partnership_featured_brand_line: '× HORRORBULLZ ×',
+    partnership_featured_main_title: 'MAX LINE HORRORBULLZ',
+    partnership_featured_brand_line: '• Max Line HorrorBullz •',
     partnership_featured_tagline: '"Where Legends Are Made"',
-    partnership_coming_soon_message: '💀 More HorrorBullz Coming Soon 💀',
+    partnership_coming_soon_message: '🏆 More Champions Coming Soon 🏆',
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     publishedAt: new Date().toISOString(),
@@ -142,7 +142,7 @@ const masonryGalleryItems = galleryImages.map((image, index) => {
 // 🎯 Get partnership fields with proper fallbacks
 const partnershipThemeEnabled = breedingProgram?.partnership_theme_enabled ?? true;
 const partnershipBrandName = breedingProgram?.partnership_brand_name || 'HORRORBULLZHQ';
-const partnershipGalleryTitle = breedingProgram?.partnership_gallery_title || '💀 HORRORBULLZHQ Gallery 💀';
+const partnershipGalleryTitle = breedingProgram?.partnership_gallery_title || '🏆 Max Line HorrorBullz Gallery 🏆';
 const partnershipGalleryDescription = processRichText(breedingProgram?.partnership_gallery_description) || 
   'Meet the legendary HorrorBullz - our exceptional English Bulldogs that embody strength, character, and championship bloodlines. Each photo showcases the dedication, quality, and excellence that defines our breeding program.';
 const partnershipFeaturedTitle = breedingProgram?.partnership_featured_title || '💀 Featured: HORRORBULLZHQ Champion 💀';
@@ -152,13 +152,13 @@ const partnershipHighlightsDescription = breedingProgram?.partnership_highlights
 const partnershipLegacyTitle = breedingProgram?.partnership_legacy_title || 'Our HorrorBullz Legacy';
 const partnershipLegacyDescription = processRichText(breedingProgram?.partnership_legacy_description) ||
   'Every photo in our gallery represents more than just legendary bulldogs – they showcase our commitment to raising powerful, well-socialized companions with exceptional temperaments and champion bloodlines that define the HorrorBullzHQ standard.';
-const partnershipFeaturedMainTitle = breedingProgram?.partnership_featured_main_title || 'MAX LINE BULLDOGS';
+const partnershipFeaturedMainTitle = breedingProgram?.partnership_featured_main_title || 'MAX LINE HORRORBULLZ';
 const partnershipFeaturedBrandLine = breedingProgram?.partnership_featured_brand_line || '× HORRORBULLZ ×';
 const partnershipFeaturedTagline = breedingProgram?.partnership_featured_tagline || '"Where Legends Are Made"';
 const partnershipComingSoonMessage = breedingProgram?.partnership_coming_soon_message || '💀 More HorrorBullz Coming Soon 💀';
 ---
 
-<Layout title="Breeding Program | Max Line Bulldogs">
+<Layout title="Breeding Program | MaxLine HorrorBullz">
   <!-- 2025 AESTHETIC: Enhanced gradient background with organic flow -->
   <main class="bg-gradient-to-b from-[#F9F7F4] via-[#FDF9F5] to-[#F5F0E8] relative overflow-hidden">
     
@@ -177,23 +177,6 @@ const partnershipComingSoonMessage = breedingProgram?.partnership_coming_soon_me
     
     <!-- 🎯 ENHANCED HERO SECTION - More cinematic at 85vh -->
     <section class="relative h-[85vh] flex items-center justify-center overflow-hidden">
-      
-      <!-- Clean Logo - Top Left (Bug Fix: Simplified positioning) -->
-      <div class="absolute top-8 left-8 z-40">
-        <img 
-          src="/logos/MLBlogo2Transparent.png" 
-          alt="Max Line Bulldogs Logo" 
-          class="h-[55px] w-auto transition-all duration-500 hover:scale-110 hover:drop-shadow-lg"
-          loading="eager"
-        />
-      </div>
-
-      <!-- Partnership Note - Enhanced badge design (using dynamic content) -->
-      <div class="absolute top-8 right-8 z-40">
-        <div class="bg-gradient-to-r from-orange-100 via-white to-orange-100 text-orange-800 px-6 py-3 rounded-full text-sm font-semibold shadow-xl backdrop-blur-sm border border-orange-200/50 hover:scale-105 transition-all duration-300">
-          {breedingProgram?.partnership_note || 'In partnership with HorrorBulz HQ 🤝'}
-        </div>
-      </div>
       
       <!-- Background Media Container - Enhanced depth -->
       <div class="absolute inset-0 w-full h-full">
@@ -251,7 +234,7 @@ const partnershipComingSoonMessage = breedingProgram?.partnership_coming_soon_me
           <div class="absolute inset-0 w-full h-full">
             <img 
               src={getImageUrl(backgroundImage, 'large')} 
-              alt={backgroundImage.alternativeText || 'Max Line Bulldogs'} 
+              alt={backgroundImage.alternativeText || 'MaxLine HorrorBullz'} 
               class="w-full h-full object-cover"
             />
           </div>
@@ -273,7 +256,7 @@ const partnershipComingSoonMessage = breedingProgram?.partnership_coming_soon_me
         
         <!-- Main Title - Enhanced with better shadow and sizing -->
         <h1 class="font-playfair text-5xl md:text-7xl xl:text-8xl font-black uppercase mb-8 text-white tracking-widest enhanced-hero-title-shadow animate-fade-in">
-          {breedingProgram?.title || 'MAX LINE BULLDOGS'}
+          {breedingProgram?.title || 'MAX LINE HORRORBULLZ'}
         </h1>
         
         <!-- Subtitle - Better spacing and styling -->
@@ -303,13 +286,7 @@ const partnershipComingSoonMessage = breedingProgram?.partnership_coming_soon_me
         </div>
       </div>
 
-      <!-- 🎯 ULTRA-MODERN QUALITY INDICATOR -->
-      <div id="video-quality-indicator" class="absolute top-20 right-20 z-30 bg-green-600/90 backdrop-blur-md text-white px-6 py-3 rounded-full text-sm font-bold shadow-2xl border border-green-500/50 transition-all duration-500" style="opacity: 0; transform: translateY(-10px);">
-        <div class="flex items-center gap-3">
-          <div class="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
-          🎬 ULTRA HD READY
-        </div>
-      </div>
+
 
       <!-- Enhanced scroll indicator with better animation -->
       <div class="absolute bottom-12 left-1/2 transform -translate-x-1/2 z-20">
@@ -427,7 +404,7 @@ const partnershipComingSoonMessage = breedingProgram?.partnership_coming_soon_me
                   <p class="italic text-lg text-gray-700 leading-relaxed">"Every puppy we place comes with our lifelong commitment to both dog and family. We don't just breed bulldogs—we build lasting relationships that span generations."</p>
                   <div class="mt-5 text-sm font-bold text-orange-700 flex items-center gap-2">
                     <span class="w-2 h-2 bg-orange-400 rounded-full"></span>
-                    — The Max Line Family
+                    Our Family Over At Max Line HorrorBullz
                   </div>
                 </div>
               </div>
@@ -442,7 +419,7 @@ const partnershipComingSoonMessage = breedingProgram?.partnership_coming_soon_me
                   <div class="relative overflow-hidden rounded-3xl shadow-2xl hover:shadow-3xl transition-shadow duration-700">
                     <img 
                       src={getImageUrl(galleryImages[0], 'large')} 
-                      alt={galleryImages[0].alternativeText || 'Max Line Bulldogs Philosophy'}
+                      alt={galleryImages[0].alternativeText || 'MaxLine HorrorBullz Philosophy'}
                       class="w-full h-[450px] object-cover transition-transform duration-1000 hover:scale-110"
                       loading="lazy"
                     />
@@ -529,12 +506,12 @@ const partnershipComingSoonMessage = breedingProgram?.partnership_coming_soon_me
                 <!-- Horror-style full-width container with clickable modal functionality -->
                 <div class="relative w-full max-w-6xl mx-auto group cursor-pointer modal-trigger" 
                      data-image-src={getImageUrl(featuredImage, 'large')} 
-                     data-image-alt={featuredImage.alternativeText || 'Featured Max Line Bulldog'}>
+                     data-image-alt={featuredImage.alternativeText || 'Featured Max Line HorrorBullz'}>
                   <div class="relative h-[60vh] md:h-[70vh] rounded-3xl overflow-hidden border-2 border-red-600 shadow-2xl hover:shadow-red-800/50 transition-all duration-700 transform hover:scale-105">
                     <!-- Full coverage background image -->
                     <img 
                       src={getImageUrl(featuredImage, 'large')} 
-                      alt={featuredImage.alternativeText || 'Featured Max Line Bulldog'}
+                      alt={featuredImage.alternativeText || 'Featured Max Line HorrorBullz'}
                       class="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
                       loading="lazy"
                       decoding="async"
@@ -632,7 +609,7 @@ const partnershipComingSoonMessage = breedingProgram?.partnership_coming_soon_me
                       data-aos-delay={index * 150}
                       data-index={index + 1}
                       data-image-src={getImageUrl(image, 'large')}
-                      data-image-alt={image.alternativeText || `Max Line Bulldogs Gallery Image ${index + 1}`}
+                      data-image-alt={image.alternativeText || `Max Line HorrorBullz Gallery Image ${index + 1}`}
                       tabindex="0"
                       role="button"
                       aria-label={`View ${image.alternativeText || `Gallery Image ${index + 1}`}`}
@@ -641,7 +618,7 @@ const partnershipComingSoonMessage = breedingProgram?.partnership_coming_soon_me
                       <div class="relative overflow-hidden h-full">
                         <img 
                           src={getImageUrl(image, 'medium')} 
-                          alt={image.alternativeText || `Max Line Bulldogs Gallery Image ${index + 1}`}
+                          alt={image.alternativeText || `Max Line HorrorBullz Gallery Image ${index + 1}`}
                           class="w-full h-full object-cover transition-all duration-1000 group-hover:scale-125 group-focus:scale-125"
                           loading="lazy"
                           decoding="async"
@@ -785,12 +762,12 @@ const partnershipComingSoonMessage = breedingProgram?.partnership_coming_soon_me
                 <!-- Light theme full-width container with clickable modal functionality -->
                 <div class="relative w-full max-w-6xl mx-auto group cursor-pointer modal-trigger" 
                      data-image-src={getImageUrl(featuredImage, 'large')} 
-                     data-image-alt={featuredImage.alternativeText || 'Featured Max Line Bulldog'}>
+                     data-image-alt={featuredImage.alternativeText || 'Featured Max Line HorrorBullz'}>
                   <div class="relative h-[60vh] md:h-[70vh] rounded-3xl overflow-hidden border-2 border-orange-300 shadow-2xl hover:shadow-orange-400/50 transition-all duration-700 transform hover:scale-105">
                     <!-- Full coverage background image -->
                     <img 
                       src={getImageUrl(featuredImage, 'large')} 
-                      alt={featuredImage.alternativeText || 'Featured Max Line Bulldog'}
+                      alt={featuredImage.alternativeText || 'Featured Max Line HorrorBullz'}
                       class="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
                       loading="lazy"
                       decoding="async"
@@ -888,7 +865,7 @@ const partnershipComingSoonMessage = breedingProgram?.partnership_coming_soon_me
                       data-aos-delay={index * 150}
                       data-index={index + 1}
                       data-image-src={getImageUrl(image, 'large')}
-                      data-image-alt={image.alternativeText || `Max Line Bulldogs Gallery Image ${index + 1}`}
+                      data-image-alt={image.alternativeText || `Max Line HorrorBullz Gallery Image ${index + 1}`}
                       tabindex="0"
                       role="button"
                       aria-label={`View ${image.alternativeText || `Gallery Image ${index + 1}`}`}
@@ -897,7 +874,7 @@ const partnershipComingSoonMessage = breedingProgram?.partnership_coming_soon_me
                       <div class="relative overflow-hidden h-full">
                         <img 
                           src={getImageUrl(image, 'medium')} 
-                          alt={image.alternativeText || `Max Line Bulldogs Gallery Image ${index + 1}`}
+                          alt={image.alternativeText || `Max Line HorrorBullz Gallery Image ${index + 1}`}
                           class="w-full h-full object-cover transition-all duration-1000 group-hover:scale-125 group-focus:scale-125"
                           loading="lazy"
                           decoding="async"

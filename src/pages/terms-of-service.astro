@@ -1,6 +1,7 @@
 ---
 import Layout from "@/layouts/Layout.astro";
-import { getTermsOfService, getImageUrl, formatRichText, formatDate, type TermsOfService } from "@/lib/strapi";
+import { getTermsOfService, formatRichText, formatDate, type TermsOfService } from "@/lib/strapi";
+import Logo from "@/components/ui/Logo.astro";
 
 // Fetch terms of service data from Strapi
 let termsOfService: TermsOfService | null = null;
@@ -31,9 +32,6 @@ try {
 // Format the content - either from Strapi or fallback
 const hasContentFromStrapi = termsOfService?.content && termsOfService.content.length > 0;
 const contentHtml = hasContentFromStrapi ? formatRichText(termsOfService.content) : null;
-
-// Get company logo URL if available
-const logoUrl = termsOfService?.company_logo ? getImageUrl(termsOfService.company_logo, 'medium') : null;
 ---
 
 <Layout title="Terms of Service">
@@ -46,16 +44,10 @@ const logoUrl = termsOfService?.company_logo ? getImageUrl(termsOfService.compan
     <!-- Hero Section -->
     <section class="bg-[#F5F0E8] pt-20 pb-16">
       <div class="max-w-4xl mx-auto px-4 md:px-8 text-center">
-        <!-- Company Logo -->
-        {logoUrl && (
-          <div class="mb-6">
-            <img 
-              src={logoUrl} 
-              alt="Max Line Bulldogs Logo" 
-              class="mx-auto h-16 w-auto object-contain"
-            />
-          </div>
-        )}
+        <!-- Company Logo - Updated to use Logo component -->
+        <div class="mb-6">
+          <Logo size="lg" animated={false} className="mx-auto" />
+        </div>
         
         <h1 class="text-5xl md:text-6xl font-bold text-gray-800 mb-4" style="font-family: 'Playfair Display', serif;">
           {termsOfService?.title || 'Terms of Service'} 🐾
@@ -89,7 +81,7 @@ const logoUrl = termsOfService?.company_logo ? getImageUrl(termsOfService.compan
                 🐾 Introduction
               </h2>
               <div class="prose prose-lg max-w-none" style="font-family: 'Inter', sans-serif; font-size: 1.1rem; line-height: 1.6;">
-                <p>Welcome to Max Line Bulldogs. These Terms of Service govern your use of our website, services, and any transactions related to our English Bulldog breeding program. By accessing our website or engaging with our services, you agree to be bound by these terms.</p>
+                <p>Welcome to Max Line HorrorBullz. These Terms of Service govern your use of our website, services, and any transactions related to our English Bulldog breeding program. By accessing our website or engaging with our services, you agree to be bound by these terms.</p>
                 <p>Our commitment is to ethical breeding practices, transparent communication, and the responsible placement of our bulldogs in loving homes. These terms ensure clarity for both our clients and our business in all interactions and transactions.</p>
               </div>
             </div>
@@ -100,7 +92,7 @@ const logoUrl = termsOfService?.company_logo ? getImageUrl(termsOfService.compan
                 🐾 Services Provided
               </h2>
               <div class="prose prose-lg max-w-none" style="font-family: 'Inter', sans-serif; font-size: 1.1rem; line-height: 1.6;">
-                <p>Max Line Bulldogs specializes in premium English Bulldog breeding, offering healthy puppies from champion bloodlines. Our services include puppy sales, breeding consultations, stud services, and ongoing support for bulldog owners. We work in partnership with HorrorBullz HQ to provide access to exceptional genetic lines.</p>
+                <p>Max Line HorrorBullz specializes in premium English Bulldog breeding, offering healthy puppies from champion bloodlines. Our services include puppy sales, breeding consultations, stud services, and ongoing support for bulldog owners. We operate across Wellington, FL and London, UK to provide access to exceptional genetic lines.</p>
                 <p>We also provide educational resources about bulldog care, health maintenance, and breeding practices. Our breeding program focuses on health testing, genetic diversity, and maintaining breed standards while prioritizing the welfare of our animals above all else.</p>
               </div>
             </div>
@@ -134,7 +126,7 @@ const logoUrl = termsOfService?.company_logo ? getImageUrl(termsOfService.compan
               </h2>
               <div class="prose prose-lg max-w-none" style="font-family: 'Inter', sans-serif; font-size: 1.1rem; line-height: 1.6;">
                 <p>While we take every precaution to ensure the health and quality of our bulldogs, we cannot guarantee against all future health issues, behavioral concerns, or other matters beyond our direct control. Our health guarantees are limited to specific conditions and timeframes as outlined in individual contracts.</p>
-                <p>Max Line Bulldogs is not liable for any indirect, incidental, or consequential damages. Our maximum liability is limited to the purchase price of the animal. Clients are encouraged to obtain pet insurance and understand the inherent responsibilities and potential costs of dog ownership.</p>
+                <p>MaxLine HorrorBullz is not liable for any indirect, incidental, or consequential damages. Our maximum liability is limited to the purchase price of the animal. Clients are encouraged to obtain pet insurance and understand the inherent responsibilities and potential costs of dog ownership.</p>
               </div>
             </div>
 
@@ -178,7 +170,7 @@ const logoUrl = termsOfService?.company_logo ? getImageUrl(termsOfService.compan
               </h2>
               <div class="prose prose-lg max-w-none" style="font-family: 'Inter', sans-serif; font-size: 1.1rem; line-height: 1.6;">
                 <p>If you have questions about these Terms of Service, need clarification on any policies, or wish to discuss specific arrangements for your bulldog purchase, please contact us directly. We believe in clear communication and are happy to address any concerns before you commit to working with us.</p>
-                <p>Our goal is to build lasting relationships with our clients based on trust, transparency, and shared commitment to the welfare of these wonderful dogs. We're here to support you throughout your journey with Max Line Bulldogs.</p>
+                <p>Our goal is to build lasting relationships with our clients based on trust, transparency, and shared commitment to the welfare of these wonderful dogs. We're here to support you throughout your journey with MaxLine HorrorBullz.</p>
               </div>
             </div>
           </div>

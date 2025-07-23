@@ -1,4 +1,37 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "framework": "astro"
+  "framework": "astro",
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "installCommand": "npm install",
+  "devCommand": "npm run dev",
+  "env": {
+    "PUBLIC_STRAPI_URL": "https://fantastic-thrill-37a105061e.strapiapp.com",
+    "PUBLIC_STRAPI_TOKEN": "95c2463acf360b36ce4b0978a3185c76d6ae63b1285afe44e7e6547773e3ff6342d6a234a597cf2ca3d44827"
+  },
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        }
+      ]
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://fantastic-thrill-37a105061e.strapiapp.com/api/:path*"
+    }
+  ]
 } 

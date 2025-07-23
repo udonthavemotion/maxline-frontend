@@ -11,12 +11,19 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
-# environment variables
+# environment variables - COMPREHENSIVE PROTECTION
 .env
-.env.astro
-.env.production
+.env.*
 .env.local
-.env.local.backup
+.env.local.*
+.env.production
+.env.production.*
+.env.development
+.env.development.*
+.env.staging
+.env.astro
+*.env
+*.env.*
 
 # macOS-specific files
 .DS_Store
@@ -40,3 +47,13 @@ pnpm-debug.log*
 Thumbs.db
 ehthumbs.db
 Desktop.ini 
+
+# Backup files
+*.backup
+*-backup
+backup-*
+
+# Client sensitive docs (if any)
+*-credentials.*
+*-passwords.*
+client-access.*

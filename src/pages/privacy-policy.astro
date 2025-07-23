@@ -1,6 +1,7 @@
 ---
 import Layout from "@/layouts/Layout.astro";
-import { getPrivacyPolicy, getImageUrl, formatRichText, formatDate, type PrivacyPolicy } from "@/lib/strapi";
+import { getPrivacyPolicy, formatRichText, formatDate, type PrivacyPolicy } from "@/lib/strapi";
+import Logo from "@/components/ui/Logo.astro";
 
 // Fetch privacy policy data from Strapi
 let privacyPolicy: PrivacyPolicy | null = null;
@@ -31,9 +32,6 @@ try {
 // Format the content - either from Strapi or fallback
 const hasContentFromStrapi = privacyPolicy?.content && privacyPolicy.content.length > 0;
 const contentHtml = hasContentFromStrapi ? formatRichText(privacyPolicy.content) : null;
-
-// Get company logo URL if available
-const logoUrl = privacyPolicy?.company_logo ? getImageUrl(privacyPolicy.company_logo, 'medium') : null;
 ---
 
 <Layout title="Privacy Policy">
@@ -52,16 +50,10 @@ const logoUrl = privacyPolicy?.company_logo ? getImageUrl(privacyPolicy.company_
     <div class="max-w-6xl mx-auto">
       <!-- Enhanced Section Header -->
       <div class="text-center mb-16 fade-in-scroll">
-        <!-- Company Logo -->
-        {logoUrl && (
-          <div class="mb-8">
-            <img 
-              src={logoUrl} 
-              alt="Max Line Bulldogs Logo" 
-              class="mx-auto h-20 w-auto object-contain"
-            />
-          </div>
-        )}
+        <!-- Company Logo - Updated to use Logo component -->
+        <div class="mb-8">
+          <Logo size="xl" animated={false} className="mx-auto" />
+        </div>
         
         <h1 class="font-playfair text-4xl md:text-6xl font-bold mb-3 mt-6 text-gray-800 leading-tight">
           {privacyPolicy?.title || 'Privacy Policy'} 🐾
@@ -96,7 +88,7 @@ const logoUrl = privacyPolicy?.company_logo ? getImageUrl(privacyPolicy.company_
               </h2>
               <div class="bg-gradient-to-r from-orange-50 via-white to-orange-50 p-6 rounded-2xl border border-orange-200 shadow-sm">
                 <div class="prose prose-lg max-w-none text-gray-700 leading-relaxed">
-                  <p>Max Line Bulldogs is committed to protecting your privacy and personal information. This Privacy Policy explains how we collect, use, and safeguard your information when you visit our website, inquire about our bulldogs, or engage with our breeding program.</p>
+                  <p>MaxLine HorrorBullz is committed to protecting your privacy and personal information. This Privacy Policy explains how we collect, use, and safeguard your information when you visit our website, inquire about our bulldogs, or engage with our breeding program.</p>
                   <p>We understand that your privacy is important, especially when sharing personal details about your interest in welcoming a bulldog into your family. This policy outlines our commitment to transparency and responsible data handling.</p>
                 </div>
               </div>
@@ -186,7 +178,7 @@ const logoUrl = privacyPolicy?.company_logo ? getImageUrl(privacyPolicy.company_
               </h2>
               <div class="prose prose-lg max-w-none" style="font-family: 'Inter', sans-serif; font-size: 1.1rem; line-height: 1.6;">
                 <p>If you have questions about this Privacy Policy, concerns about your personal information, or requests regarding your data, please don't hesitate to contact us. We are committed to addressing your privacy concerns promptly and transparently.</p>
-                <p>Your trust is essential to our breeding program's success, and we're here to ensure you feel confident about how your information is handled throughout your journey with Max Line Bulldogs.</p>
+                <p>Your trust is essential to our breeding program's success, and we're here to ensure you feel confident about how your information is handled throughout your journey with MaxLine HorrorBullz.</p>
               </div>
             </div>
           </div>

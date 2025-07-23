@@ -63,7 +63,7 @@ class GraphQLClient {
   private getHeaders(): Record<string, string> {
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
-      'User-Agent': 'Mozilla/5.0 (MaxLine Bulldogs Frontend)', // Add User-Agent to prevent BX Shield blocking
+      'User-Agent': 'Mozilla/5.0 (MaxLine HorrorBullz Frontend)', // Add User-Agent to prevent BX Shield blocking
     };
     
     if (this.token) {
